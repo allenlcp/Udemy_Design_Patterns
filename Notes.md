@@ -17,13 +17,13 @@
 > there is the concept of interface, but there is also the Java construct interface
 > you can program to an interface, without having to actually use a Java interface
 
-* "Porgam to an interface" really means "Program to a supertype"
+* "Program to an interface" really means "Program to a supertype"
 > the declared type of the var should be a supertype, usually an abstract class or interface
-> the objects assigned to those var can be of any concrete implementatin of the supertype
+> the objects assigned to those var can be of any concrete implementation of the supertype
 > the class declaring them doesn't have to know about the actual object types
 
 * Do not declare var to be instances of a particular concrete class
-> instead, commit only to an interface defined by an abstract class (inteface or abstract)
+> instead, commit only to an interface defined by an abstract class (interface or abstract)
 
 * always program for the interface and not for the implementation
 > will lead to flexible code which can work with any new implementation of the interface
@@ -32,12 +32,12 @@
 > clients do not need to know the specific types of objects they use - as long as the objects adhere to the interface that clients expect
 > clients do not need to know the classes that implement these objects - they only know about the abstract class(es) defining the interface
 
-* we can use interface types on var, return types of methods or parameter tpyes in a method
+* we can use interface types on var, return types of methods or parameter types in a method
 
 * the point is to exploit polymorphism by programming to a supertype so that the actual runtime object is not locked into the code
 ___
 **Abstract Classes vs Interfaces**
-> with support of default methods interfaces since the launch of Java 8, the gap between when to use an interface and when to use an abstract calsses has been reduced
+> with support of default methods interfaces since the launch of Java 8, the gap between when to use an interface and when to use an abstract classes has been reduced
 
 > var in interfaces are **public static final** 
 > abstract classes can have other access modifiers for variables (private, protected, etc..
@@ -46,9 +46,9 @@ ___
 > methods in abstract classes can be private and protected too
 
 > utilize abstract classes to establish a relationship between interrelated objects - when you want to share code among several closely related classes then this common state or behavior can be put in the abstract class
-> utlize interfaces to establish a relationship between unrelated classes - the interfaces Comparable and Cloaneable are implemented by many unrelated classes
-> utilize interfaces if you want to specify the behavior of a particular data type, but are not concerened about who implements its behavior
-> utlize interfaces if you want to take advantag of multiple inheritance (implements)
+> utilize interfaces to establish a relationship between unrelated classes - the interfaces Comparable and Cloaneable are implemented by many unrelated classes
+> utilize interfaces if you want to specify the behavior of a particular data type, but are not concerned about who implements its behavior
+> utilize interfaces if you want to take advantage of multiple inheritance (implements)
 
 > **one is not better than the other**
 
@@ -101,9 +101,9 @@ Composition
 * composition is refereed as a HAS-A relationship between classes in OO design - an object contains(owns) another object as a member var of its class
 
 * composition implies a relationship where the child cannot exist independent of the parent
-> somethis is part of another thing (wheels on an airplane)
+> something is part of another thing (wheels on an airplane)
 > rooms in a house - each house has a room or many rooms, rooms do not exist separate to a house
-> cells in a body - when the body object is detroyed, the cells get destroyed with it
+> cells in a body - when the body object is destroyed, the cells get destroyed with it
 
 Aggregation
 * aggregation is a HAS-A relationship between objects and is closely related to composition
@@ -114,13 +114,13 @@ Aggregation
 > tires on a car - the tires can be taken off of the car and installed on a different one
 
 * aggregation and composition are almost completely identical except that composition is used when the life of the child is completely controlled by the parent
-> the disticntion loses much of its importance in languages that have garbage collection  - you do not have to concern yourself with the life of the object
+> the distinction loses much of its importance in languages that have garbage collection  - you do not have to concern yourself with the life of the object
 
 * favoring obj composition over class inheritance helps you keep each class encapsulated and focused on one task
-* your calsses and class hierarchies will remain smaill and will be less likely to grow into unmanageable monsters
+* your classes and class hierarchies will remain small and will be less likely to grow into unmanageable monsters
 
 * inheritance breaks encapsulation because sub classes are dependent upon the base class behavior
-> inheritance is tightly coupled wiehreas composition is loosely coupled
+> inheritance is tightly coupled whereas composition is loosely coupled
 > when behavior of super class changes, functionality in sub class may get broken, without any change on its part
 
 * java does not support multiple inheritance
@@ -136,17 +136,17 @@ ___
 * delegation is the concept of one class "delegating" its behavior to another class
 > don't do all stuff by yourself, delegate it to a respective class
 > when you delegate, you are simply calling up some class which knows what must be done
-> don not really care how it does it, all you care about is that the calss you are calling knows what it needs to do
+> don not really care how it does it, all you care about is that the class you are calling knows what it needs to do
 
 * delegation can be viewed as a relationship between objects where one object forwards certain method calls to another object, called its delegate
 
 * delegation is an extreme example of object composition
 > shows that you can always replace inheritance with object composition as a mechanism for code reuse
-> delegation means that you use an object of another calss as an instance variable, and forward messages to the instance
+> delegation means that you use an object of another class as an instance variable, and forward messages to the instance
 
 * it is better than inheritance for many cases
 > it makes you to think about each message you forward - the instance is of a known class, rather than a new class
-> it does not force you to accept all the methods of the super calss - you can provide only the methods that really make sense
+> it does not force you to accept all the methods of the super class - you can provide only the methods that really make sense
 
 Advantages
 * the primary adv of delegation is run-time flexibility - it makes it easy to compose behaviors at run-time and to change the way they are composed
@@ -199,16 +199,16 @@ ___
 > all its methods should be narrowly aligned with that responsibility
 > a class should have only one job
 
-* a class should have a single responsiblity, where a responsibility is nothing but a reason to change
+* a class should have a single responsibility, where a responsibility is nothing but a reason to change
 
-* should make sure that one class at most is responsible for doing one task or functionality among the whole set of responsibiities that it has
+* should make sure that one class at most is responsible for doing one task or functionality among the whole set of responsibilities that it has
 > only when theres is change needed in that specific task or functionality should this class be changed
 
-* the single responsiblity principle is closely related to the concepts of coupling and cohesion
+* the single responsibility principle is closely related to the concepts of coupling and cohesion
 
 **Coupling** is the degree of interdependence between software classes or methods
 > a measure of how closely connected two classes or two methods are
-> the stength of the realtionship between classes
+> the strength of the relationship between classes
 
 * low coupling means small dependencies between classes/methods
 > easier to change code without introducing bugs in other classes or other methods
@@ -226,13 +226,13 @@ ___
 * high cohesion means that the class is focused on what it should be doing 
 > contains only methods relating to the intention of the class
 
-* The single resonsibility principle is about limiting the impact of change by designing loosely(low) coupled classes that are highly cohesive
+* The single responsibility principle is about limiting the impact of change by designing loosely(low) coupled classes that are highly cohesive
 
 Examples of responsibilities
-* some examples of responsiblities to consider that may need to be seperated include:
+* some examples of responsibilities to consider that may need to be separated include:
 > Persistence
-> Class Selectin / Instantiation
-> Validatin
+> Class Selection / Instantiation
+> Validation
 > Formatting
 > Notification
 > Parsing
@@ -288,18 +288,18 @@ ___
 ## **Open Closed Principle**
 
 * Bertrand Meyer proposed the open-closed principle (OCP)
-> classes and methods should be open for extension (new functionnality) and closed for modification
+> classes and methods should be open for extension (new functionality) and closed for modification
 > a class should be easily extendable without modifying the class itself
 
 * a module is said to open if it is still available for extension
 > it should be possible to add fields to the data structures it contains, or new elements to the set of functions it performs
 
-* a module is said to be claosed if it is available for use by other modules
+* a module is said to be closed if it is available for use by other modules
 > assumes that the module has been given a well-defined, stable description
-> the interface in the sense of informatin hiding (not a java interface)
+> the interface in the sense of information hiding (not a java interface)
 
-* a general idean of this principle is that it tells you to write your code so that you will be able to add new functionality without changing the existing code
-> prevents situations in which a change to one of your classes also requires you to adapt all depending classess
+* a general idea of this principle is that it tells you to write your code so that you will be able to add new functionality without changing the existing code
+> prevents situations in which a change to one of your classes also requires you to adapt all depending classes
 > reduces tight coupling
 
 * Robert C. Marting considered this principle as the "most important principle of OO design"
@@ -309,18 +309,18 @@ ___
 * however, inheritance introduces tight coupling if the subclasses depend on implementation details of their parent class
 
 * others redefined the Open/Closed Principle to the Polymorphic Open/Closed Principle
-> uses interfaces instead of super classes to allow diffrent implementation
+> uses interfaces instead of super classes to allow different implementation
 > interfaces can be reused through inheritance but implementation need not be
-> can easily substitute without changing the code taht uses them - multiple implementations can be created and polymorphically substituted for each other
+> can easily substitute without changing the code that uses them - multiple implementations can be created and polymorphically substituted for each other
 
 * interfaces are closed for modifications
 > you can provide new implementations to extend the functionality of your software
 > new implementations must implement the interface
 
 * interfaces introduce an additional level of abstraction which enables loose coupling
-> interfaces are independent of eact other and don't need to share any code (usually)
+> interfaces are independent of each other and don't need to share any code (usually)
 
-Problem - evertime we have a new shape we need to modify the AreaCalculator class with a new method
+Problem - every time we have a new shape we need to modify the AreaCalculator class with a new method
 ``` java
 class AreaCalculator{
     public double calculateRectangleArea(Rectangle rectangle){
@@ -379,16 +379,16 @@ ___
 ## **Liskov Substition Principle**
 * was introduced by Barbara Liskov
 
-* the principle defines that objects of a supercalss can be replaceable with objects of its superclasses without breaking the application
+* the principle defines that objects of a superclass can be replaceable with objects of its superclasses without breaking the application
 > requires the objects of your subclasses to behave in the same way as the objects of your superclass
 > methods which use a superclass type must be able to work with the subclass without any issues
 
-* an overriden method of a subclass needs to accept the same input parameter values as the method of the supercalss
+* an overridden method of a subclass needs to accept the same input parameter values as the method of the superclass
 > do not implement any stricter validation rules on input parameters than implemented by the parent class
-> any code that calls this method on an object of the supercalss might cause an exception, if it gets called with an object of the subclass
+> any code that calls this method on an object of the superclass might cause an exception, if it gets called with an object of the subclass
 
 * the return value of a method of the subclass needs to comply with the same rules as the return value of the method of the superclass
-> you can only decide to apply stricted rules by returning a specific subclass of the defined return valur or by returning a subset of the valid return values of the superclass
+> you can only decide to apply strict rules by returning a specific subclass of the defined return value or by returning a subset of the valid return values of the superclass
 
 * in order to follow LSP the subclass must enhance functionality, but not reduce functionality
 ___
@@ -398,7 +398,7 @@ ___
 
 * "Clients should not be forced to depend upon interfaces that they do not use"
 > a client should not implement an interface if it does not use a method in that interface
-> happens mostly when one interface contains more than one functionality, and the client only needs one fuctinality and not the other
+> happens mostly when one interface contains more than one functionality, and the client only needs one fuctionality and not the other
 
 * the goal of the interface segregation principle is to reduce the side effects and frequency of required changes by splitting the software into multiple, independent parts
 
@@ -409,7 +409,7 @@ ___
 
 * if we created a single interface then all clients will have to unnecessarily implement all other clients' methods just to make their interface compile
 > this is referred to as a "fat" interface
-> makes the overall design rigid due to the ernomous effort required to manage changes across all clients when making a change to a method pertaining to only one client
+> makes the overall design rigid due to the enormous effort required to manage changes across all clients when making a change to a method pertaining to only one client
 
 * it avoids the design drawbacks associated with a fat interface by refactoring each fat interface into multiple segregated interfaces
 > each segregate interface is a lean interface as it only contains methods which are required for a specific client
@@ -527,7 +527,7 @@ class OnlineClientImpl implements RestaurantInterface{
 ```
 
 Refactored
-* seperated interface into
+* separated interface into
 > payments type
 > online orders
 > walk-in orders
