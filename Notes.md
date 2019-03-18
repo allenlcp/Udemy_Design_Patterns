@@ -976,6 +976,7 @@ public class Client {
 ___
 
 **2. Abstract Factory**
+**Overview**
 * the abstract factory provides an interface for creating families of related or dependent objects without specifying their concrete classes
 > "factory of factories"
 > super factory that creates other factories
@@ -988,7 +989,32 @@ ___
 
 * there is often one concrete class implemented for each family
 
+**When to use it**
+* when a system should be independent of how its products are created, compose, and represented
 
+* when we need to deal with multiple factories
+
+* when the problem domain has different families of objects present and each family is used under different circumstances
+
+* when a family of related product objects is designed to be used together, and you need to enforce this constraint
+
+* when you want to provide a class lib of products, and want to reveal just their interfaces, not their implementations
+
+
+**Summary**
+* all factories encapsulate object creation
+
+* Factory Method relies on inheritance
+> object creation is delegated to subclasses, which implement the factory method to create objects
+
+* Abstract Factory relies on object composition
+> object creation is implemented in methods exposed in the factory interface
+
+* all factory patterns promote loose coupling by reducing the dependency of your application on concrete classes
+
+* the intent of Factory Method is to allow a class to defer instantiation to its subclasses
+
+* the intent of Abstract Factory is to create families of related objects without having to depend on their concrete classes
 
 
 ___
