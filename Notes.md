@@ -534,5 +534,85 @@ Refactored
 
 ___
 
-
 ## **Dependency Inversion**
+* no var should hold a reference to a concrete class - use the factory design pattern to avoid this
+* no class should subclass from a concrete class
+> if you subclass from a concrete class, you are depending on a concrete class
+> subclass from an abstraction (an interface or an abstract class)
+
+* no method should override an implemented method of any of its base classes
+> if you override an implemented method, then your base class was not really an abstraction to start with
+> methods implemented in the base class are meant to be shared by all your subclasses
+
+* this is a guideline you should strive for, rather than a rule you should follow all the time
+> if you have a class that is not likely to change, and you know it, then it is ok to instantiate a concrete class
+> we instantiate String objects all the time and this violates the principle - however, the String class is very unlikely to change
+
+___
+
+## **Dependency Injection**
+
+**Dependencies**
+* a Java class has a dependency on another class, if it uses an instance of this class
+> referred to as a class dependency
+> a class which accesses a logger service has a dependency on this service class
+
+* java classes should be as independent as possible from another Java classes 
+> increases the possibility of reusing these classes and to be able to test them independently from other classes
+
+* if a java class creates an instance of another class via the new operator, it cannot be uses (and tested) independently from this class - this is called a hard dependency
+
+* dependency injection solves these "hard" dependencies
+
+
+**Dependency Injection**
+* dependency injection is a tech whereby one object supplies the dependencies of another object - enables you to replace dependencies without changing the class that uses them
+
+* a dependency is an object that can be used (a service)
+
+* an injection is the passing of a dependency to a dependent object (a client) that would use it
+
+* allows us to remove the hard-coded dependencies and make our application loosely coupled, extendable and maintainable
+
+* dependency injection is one form of the broader technique of dependency inversion
+- supports the dependency inversion principle
+
+* the client delegates the responsibility of providing its dependencies to external code (the injector)
+
+
+**4 Roles in Dependency Injection**
+* if you want to use the DI, you need classes that fulfill 4 basic role
+> the service you want to use
+> the client that uses the service
+> an interface that is used by the client and implemented by the service
+> the injector which creates a service instance and injects it into the client
+
+* you already implement 3 of these 4 roles by following the dependency inversion principle - the service and client are the 2 classes between which the dependency inversion principle intends to remove the dependency by introducing an interface
+
+* the injector is the only role that is not required by the dependency inversion principle
+
+
+**Injection Types**
+* constructor injection - the dependencies are provided through a class constructor
+``` java
+// Constructor
+Client(Service service){
+    // save the ref to the passed-in service inside the client
+    this.service = service;
+}
+
+```
+
+* setter injection - the client exposes a setter method that the injector uses to inject the dependency
+``` java
+// Setter method
+public void setService(Service service){
+    // save the ref to the passed-in service inside the client
+    this.service = service;
+}
+```
+
+* interface injection 
+> the dependency provides an injector method that will inject the dependency into any client passed to it
+> clients must implement an interface that exposes a setter method that accepts the dependency
+
