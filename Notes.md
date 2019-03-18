@@ -616,3 +616,384 @@ public void setService(Service service){
 > the dependency provides an injector method that will inject the dependency into any client passed to it
 > clients must implement an interface that exposes a setter method that accepts the dependency
 
+``` java
+// Service setter interface
+public interface ServiceSetter{
+    public void setService(Service service);
+}
+
+public class Service{
+    void inject(Client c){
+        c.setService(this);
+    }
+}
+
+// Client class
+public class Client implements ServiceSetter{
+    // Internal ref to the service used by this client.
+    private ServiceSetter;
+
+    // Set the service that this client is to be use
+    @Override
+    public void serService(Service service){
+        this.service = service;
+    }
+}
+```
+___
+
+## **Creational Design Patterns**
+* a program should not depend on how objects are created and arranged
+
+* instantiation is an activity that should not always be done in public and can often lead to coupling problems
+
+* In Java, the simplest way to create an instance of an object is by using the new operator
+> fred = new Fred(); //instance of Fred class
+> creates a concrete class
+
+* Tying your code to a concrete class can make it more fragile and less flexible
+> code may have to be changed as new concrete classes are added
+> your code will not be "closed for modification" to extend it with new concrete types, you will have to reopen it
+
+* creational design patterns provide a way to create objects
+
+* creational design patterns abstract the instantiation process
+> the creation logic is hidden
+> encapsulates knowledge about which concrete classes the system uses
+> programmer may call a method or use another object, rather than instantiating objects directly using the new operator
+
+* all the system at large knows about the objects is their interface as defined by abstract classes
+> gives the programmer a lot of flexibility in what gets created, who creates it, how it gets created, and when
+> lets you configure a systems with "product" objects that vary widely in structure and functionality
+> configuration can be static (compile-time) or dynamic (at run-time)
+
+* by coding to an interface, you can insulate yourself from a lot of changes that might happen to a system down the road
+* sometimes creational patterns are competitors
+> there are cases either Prototype or Abstract Factory could be used profitably
+
+> sometimes creational patterns are complementary
+> builder can use one of the other patterns to implement which components get built
+> prototype can use Singleton in its implementation
+
+
+**Class Patterns vs. Object Patterns (sub-categories)**
+* class patterns describe how relationships between classes are defined
+> use inheritance
+> relationships are established at compile time
+> factory pattern
+> drawback of this approach is that it can require creating a new subclass just to change the class of the product - changes can cascade when the product creator is itself created by a factory method, then you have to override its creator as well
+
+* object patterns describe relationships between objects
+> use composition
+> relationships are typically created at runtime - more dynamic and flexible
+> abstract factory, singleton, builder, and prototype patterns
+
+___
+
+**1. Factory**
+* one of the most used design patterns in Java
+> a creational pattern
+> factories handle the details of object creation
+
+* this pattern defines an interface for creating an object (Creator)
+
+* when a class needs to instantiate a subclass of another class, but doesn't know which one - it lets subclasses decide which class to instantiate
+
+* creates objects without exposing the creation logic to the client (Creator) and refers to the newly created object using a common interface (Product)
+
+* gives us a way to encapsulate the instantiations of concrete types
+
+Frameworks
+* the factory method is used in frameworks
+> frameworks exist at an abstraction level
+
+* frameworks uses abstract classes to define and maintain relationships between objects
+> often responsible for creating these objects as well
+
+* the framework should not know and should not be concerned about instantiating specific objects 
+> need to defer the decisions about specific objects to the users of the framework
+
+* use the Factory Method pattern when
+> a class cannot anticipate the class of objects it must create
+> a class wants its subclasses to specify the objects it creates
+
+* also useful when implementing parallel class hierarchies 
+> when some of the responsibilities shift from one class to another
+
+**Factory Method Implementation (Abstract Creator)**
+* It is the "strictest" implementation of the pattern
+> the creator class is an abstract class
+> you create a subclass of the creator class for each product type which contains an implementation of the factory method
+> to use the factory method(create objects). you simply specify an instance of that type and invoke the factory method
+
+* the disadvantage of this approach is that every product has to subclass the creator class and implement its factory method
+
+* product is the interface for the type of object that the Factory Method creates
+
+* creator is the interface that defines the Factory Method
+> any other methods implemented here are written to operate on products produces by the factory method
+> the creator class is written without knowledge of the actual products taht will be created
+
+* clients will need to subclass the Creator class to make a particular concrete product 
+> only subclasses actually implement the factory method and creates products
+
+* the actual products that will be created is decided purely by the choice of the subclass that is used
+
+``` java
+public interface Shape {
+    void draw();
+}
+
+class Rectangle implements Shape{
+    @Override
+    public void draw() {
+        System.out.println("Inside Rectangle::draw() method");
+    }
+}
+
+class Circle implements Shape{
+    @Override
+    public void draw() {
+        System.out.println("Inside Circle::draw() method");
+    }
+}
+```
+* factory 
+``` java
+public abstract class AbstractShapeFactory {
+    protected abstract Shape factoryMethod();
+
+    public Shape getShape(){
+        return factoryMethod();
+    }
+
+    // other helper methods
+}
+
+class RectangleFactory extends AbstractShapeFactory{
+    @Override
+    protected Shape factoryMethod() {
+        return new Rectangle();
+    }
+}
+
+class CircleFactory extends AbstractShapeFactory{
+    @Override
+    protected Shape factoryMethod() {
+        return new Circle();
+    }
+}
+
+class SquareFactory extends AbstractShapeFactory{
+    @Override
+    protected Shape factoryMethod() {
+        return new Square();
+    }
+}
+```
+* client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        //get an object of Circle and call its draw method
+        Shape shape1 = new CircleFactory().getShape();
+        shape1.draw();
+
+        //get an object of Circle and call its draw method
+        Shape shape2 = new RectangleFactory().getShape();
+        shape2.draw();
+
+        //get an object of Circle and call its draw method
+        Shape shape3 = new SquareFactory().getShape();
+        shape3.draw();
+    }
+}
+```
+
+**Factory Method Implementation (Concrete Creator)**
+* this implementation includes creating a single concrete creator class
+> the creator class is concrete class
+> you add implementation code to one factory method to create your product type bases on a parameter passed to the method
+> to use the factory method (create objects), you create an instance of the creator class and invoke the factory method with an argument for your "class type"
+
+* the advantage of this approach is that you do not need to create a new subclass of the abstract creator class and implement a new factory method
+
+Example 1
+* factory
+``` java
+public class ShapeFactory {
+    // use getShape method to get object
+    public Shape getShape(String shapeType){
+        if(shapeType == null){
+            return null;
+        } else if (shapeType.equalsIgnoreCase("CIRCLE")){
+            return new Circle();
+        } else if (shapeType.equalsIgnoreCase("RECTANGLE")){
+            return new Rectangle();
+        } else if (shapeType.equalsIgnoreCase("SQUARE")){
+            return new Square();
+        }
+
+        return  null;
+    }
+}
+```
+client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        ShapeFactory shapeFactory = new ShapeFactory();
+
+        // get an object of Circle and call its draw method
+        Shape shape1 = shapeFactory.getShape("CIRCLE");
+        shape1.draw();
+
+        // get an object of Circle and call its draw method
+        Shape shape2 = shapeFactory.getShape("RECTANGLE");
+        shape2.draw();
+
+        // get an object of Circle and call its draw method
+        Shape shape3 = shapeFactory.getShape("SQUARE");
+        shape3.draw();
+    }
+}
+```
+
+Exmaple 2
+``` java
+public interface AnimalInterface {
+    void walk();
+    void eat();
+}
+
+class Tiger implements AnimalInterface{
+    @Override
+    public void walk() {
+        System.out.println("Tiger::walk() method");
+    }
+
+    @Override
+    public void eat() {
+        System.out.println("Tiger::eat() method");
+    }
+}
+
+class Duck implements AnimalInterface{
+    @Override
+    public void walk() {
+        System.out.println("Duck::walk() method");
+    }
+
+    @Override
+    public void eat() {
+        System.out.println("Duck::eat() method");
+    }
+}
+```
+factory
+``` java
+public abstract class AnimalFactoryInterface {
+    public abstract AnimalInterface getAnimalType(String type) throws Exception;
+}
+
+
+class ConcreteFactory extends AnimalFactoryInterface {
+    @Override
+    public AnimalInterface getAnimalType(String animalType) throws Exception {
+
+        switch (animalType){
+            case "Duck":
+                return new Duck();
+            case "Tiger":
+                return new Tiger();
+            default:
+                throw new Exception("Animal type: " + animalType + " cannot be instantiated");
+        }
+    }
+}
+```
+client
+``` java
+public class Client {
+    public static void main(String[] args) throws Exception{
+
+        AnimalFactoryInterface animalFactory = new ConcreteFactory();
+
+        AnimalInterface animal1 = animalFactory.getAnimalType("Duck");
+        animal1.eat();
+        animal1.walk();
+
+        AnimalInterface animal2 = animalFactory.getAnimalType("Tiger");
+        animal2.eat();
+        animal2.walk();
+    }
+}
+```
+
+
+**Factory Method Implementation (Static Method)**
+* 3rd implementation of the factory method pattern includes the use of a static method
+* define a factory as a static method is a common technique - often called a static factory
+* this technique is sometimes used so that you do not need to instantiate an object to make use of the create method
+* it has the disadvantage that you cannot subclass and change the behavior of the create method
+
+factory
+``` java
+public class ShapeFactory {
+    // use getShape method to get object
+    public static Shape getShape(String shapeType){
+        if(shapeType == null){
+            return null;
+        } else if (shapeType.equalsIgnoreCase("CIRCLE")){
+            return new Circle();
+        } else if (shapeType.equalsIgnoreCase("RECTANGLE")){
+            return new Rectangle();
+        } else if (shapeType.equalsIgnoreCase("SQUARE")){
+            return new Square();
+        }
+        return  null;
+    }
+}
+```
+client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        // get an object of Circle and call its draw method
+        Shape shape1 = ShapeFactory.getShape("CIRCLE");
+        shape1.draw();
+
+        // get an object of Circle and call its draw method
+        Shape shape2 = ShapeFactory.getShape("RECTANGLE");
+        shape2.draw();
+
+        // get an object of Circle and call its draw method
+        Shape shape3 = ShapeFactory.getShape("SQUARE");
+        shape3.draw();
+    }
+}
+```
+___
+
+**2. Abstract Factory**
+* the abstract factory provides an interface for creating families of related or dependent objects without specifying their concrete classes
+> "factory of factories"
+> super factory that creates other factories
+
+* a pattern that creates objects via abstraction (does not care how its products are created)
+
+* the methods of an Abstract Factory are implemented as factory methods
+> provides an encapsulation mechanism to a group of individual factories
+> factory method is a subset of this pattern
+
+* there is often one concrete class implemented for each family
+
+
+
+
+___
+**3. Singleton**
+___
+**4. Builder**
+___
+**5. Prototype**
