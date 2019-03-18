@@ -1154,6 +1154,9 @@ public class Client {
 ```
 ___
 **3. Singleton**
+
+
+
 ___
 **4. Builder**
 ___
