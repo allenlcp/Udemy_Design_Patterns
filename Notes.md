@@ -1016,7 +1016,142 @@ ___
 
 * the intent of Abstract Factory is to create families of related objects without having to depend on their concrete classes
 
+* objects - shape family
+``` java
+public interface Shape {
+    void draw();
+}
 
+class Rectangle implements Shape {
+    public void draw() {
+        System.out.println("Inside Rectangle::draw() method");
+    }
+}
+
+class Circle implements Shape {
+    public void draw() {
+        System.out.println("Inside Circle::draw() method");
+    }
+}
+
+class Square implements Shape {
+    public void draw() {
+        System.out.println("Inside Square::draw() method");
+    }
+}
+```
+* object - color family
+``` java
+public interface Color {
+    void fill();
+}
+
+
+class Red implements Color{
+    public void fill() {
+        System.out.println("Red:: fill() method");
+    }
+}
+
+class Blue implements Color{
+    public void fill() {
+        System.out.println("Blue:: fill() method");
+    }
+}
+
+class Green implements Color{
+    public void fill() {
+        System.out.println("Green:: fill() method");
+    }
+}
+```
+* object - factories
+``` java
+public abstract class AbstractFactory {
+    abstract Color getColor(String color);
+    abstract Shape getShape(String shape);
+}
+
+class ShapeFactory extends AbstractFactory{
+    Shape getShape(String shapeType) {
+        if(shapeType == null){
+            return null;
+        } else if (shapeType.equalsIgnoreCase("CIRCLE")){
+            return new Circle();
+        } else if (shapeType.equalsIgnoreCase("RECTANGLE")){
+            return new Rectangle();
+        } else if (shapeType.equalsIgnoreCase("SQUARE")){
+            return new Square();
+        }
+
+        return  null;
+    }
+
+    Color getColor(String color) {
+        return null;
+    }
+
+}
+
+class ColorFactory extends AbstractFactory{
+    Color getColor(String colorType) {
+        if(colorType == null){
+            return null;
+        } else if (colorType.equalsIgnoreCase("RED")){
+            return new Red();
+        } else if (colorType.equalsIgnoreCase("GREEN")){
+            return new Green();
+        } else if (colorType.equalsIgnoreCase("BLUE")){
+            return new Blue();
+        }
+
+        return  null;
+    }
+
+    Shape getShape(String shape) {
+        return null;
+    }
+}
+```
+* factory of factory
+``` java
+public class FactoryProducer {
+    public static AbstractFactory getFactory(String choice){
+        if(choice.equalsIgnoreCase("SHAPE")){
+            return new ShapeFactory();
+        }
+
+        if(choice.equalsIgnoreCase("COLOR")){
+            return new ColorFactory();
+        }
+
+        return null;
+    }
+}
+```
+* client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        AbstractFactory shapeFactory = FactoryProducer.getFactory("Shape");
+        Shape shape1 = shapeFactory.getShape("Circle");
+        shape1.draw();
+        Shape shape2 = shapeFactory.getShape("Square");
+        shape2.draw();
+        Shape shape3 = shapeFactory.getShape("Rectangle");
+        shape3.draw();
+
+
+        AbstractFactory colorFactory = FactoryProducer.getFactory("Color");
+        Color color1 = colorFactory.getColor("Red");
+        color1.fill();
+        Color color2 = colorFactory.getColor("Blue");
+        color2.fill();
+        Color color3 = colorFactory.getColor("Green");
+        color3.fill();
+    }
+}
+```
 ___
 **3. Singleton**
 ___
