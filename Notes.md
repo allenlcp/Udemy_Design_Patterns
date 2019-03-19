@@ -2008,3 +2008,309 @@ Suitable even for complex object graphs
 Can be used on existing classes that currently provide just shallow copy
 
 ___
+
+## **Structural Design Pattern**
+Describes how classes and objects can be combined to form larger structures
+* utilizes inheritance to compose interfaces or implementations
+* structural object patterns describe ways to assemble objects 
+* e.g complex user interfaces and accounting data
+
+These design patterns concern class and object composition
+
+The composite design pattern - describes how to build a class hierarchy made up of classes for two kinds of objects
+
+The proxy design pattern acts as a convenient surrogate or placeholder for another object - provide a level of indirection to specific properties of objects
+
+**Class Patterns vs Object Patterns (sub category)**
+Class patterns describe how relationships between classes are defined
+* use inheritance to compose interfaces or implementations
+* relationships are established at compile time
+* adapter
+
+Object patterns describe relationships between objects
+* describe ways to compose objects to realize new functionality 
+* use composition
+* relationships are typically created at runtime - more dynamic and flexible
+* bridge, composite, decorator, facade, flyweight and proxy patterns
+
+
+**7 Structural Patterns covered below**
+* Adapter Pattern
+* Bridge Pattern
+* Composite Pattern
+* Decorator Pattern
+* Facade Pattern
+* Flyweight Pattern
+* Proxy Pattern
+
+**(a) Adapter Design Pattern**
+The adapter design pattern converts an interface of a class into another interface that clients expect
+* works as a bridge between two incompatible interfaces = "adapter" does the conversion
+* lets classes work together that could not otherwise
+* also known as a "Wrapper"
+
+Come under the structural pattern classification as this pattern combines the capability of two independent interfaces
+
+The adapter acts to decouple the client form the implemented interface
+* encapsulates any future changes
+* client does not need to be modified each time it needs to operate against a different interface
+
+Full of good OO design principles
+* use of object composition to wrap the adaptee with an altered interface - can use an adapter with any subclass of the adaptee
+* binds the client to an interface, not an implementation
+
+
+**When to use the Adapter Pattern**
+When you want to use an existing class, and its interface does not match the one you need
+
+When you want to create a reusable class that cooperates with unrelated or unforseen classes - that do not necessarily have compatible interfaces
+
+When you need to use several existing subclasses, but it is impractical to adapt their interface by sub-classing every one
+* an object adapter can adapt the interface of its parent class
+
+
+**Participants**
+**Target** - defines the domain specific interface that Client uses
+**Client** - collaborates with objects conforming to the Target interface
+**Adaptee** - defines an existing interface that needs adapting
+**Adapter** - adapts the interface of Adaptee to the Target interface, involves a single class which is responsible to join functionalities of independent or incompatible interfaces
+
+**Adapter(Object) using composition - Example 1**
+Target
+``` java
+public interface Duck {
+    void quack();
+    void fly();
+}
+
+class MallardDuck implements Duck{
+    @Override
+    public void quack() {
+        System.out.println("Quack");
+    }
+
+    @Override
+    public void fly() {
+        System.out.println("I am flying");
+    }
+}
+```
+Adaptee
+``` java
+public interface Turkey {
+    void gobble();
+    void fly();
+}
+
+class WildTurkey implements Turkey{
+    @Override
+    public void gobble() {
+        System.out.println("Gobble gobble");
+    }
+
+    @Override
+    public void fly() {
+        System.out.println("I am flying a short distance");
+    }
+}
+```
+
+Adapter
+``` java
+public class TurkeyAdapter implements Duck {
+    Turkey turkey; // adaptee
+
+    public TurkeyAdapter(Turkey turkey) {
+        this.turkey = turkey;
+    }
+
+    @Override
+    public void quack() {
+        turkey.gobble();
+    }
+
+    @Override
+    public void fly() {
+        for(int i=0; i<5 ;i++) {
+            turkey.fly();
+        }
+    }
+}
+```
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        MallardDuck duck = new MallardDuck();
+        WildTurkey turkey = new WildTurkey();
+
+        Duck turkeyAdapter = new TurkeyAdapter(turkey);
+        System.out.println("The turkey says....");
+        turkey.gobble();
+        turkey.fly();
+
+        System.out.println("\nThe duck says");
+        testDuck(duck);
+
+        System.out.println("\nThe TurkeyAdapter says");
+        testDuck(turkeyAdapter);
+    }
+
+    static void testDuck(Duck duck){
+        duck.quack();
+        duck.fly();
+    }
+}
+```
+``` text
+The turkey says....
+Gobble gobble
+I am flying a short distance
+
+The duck says
+Quack
+I am flying
+
+The TurkeyAdapter says
+Gobble gobble
+I am flying a short distance
+I am flying a short distance
+I am flying a short distance
+I am flying a short distance
+I am flying a short distance
+```
+
+
+**Adapter(Object) using composition - Example 2**
+``` java
+public class Rectangle {
+    public double length;
+    public double width;
+}
+
+public class Triangle {
+    public double base;
+    public double height;
+
+    public Triangle(double base, double height) {
+        this.base = base;
+        this.height = height;
+    }
+}
+```
+
+``` java
+public interface CalculatorInterface {
+    // target interface
+    double getArea(Rectangle r);
+}
+
+class Calculator implements CalculatorInterface {
+    Rectangle rectangle;
+
+    @Override
+    public double getArea(Rectangle r) {
+        rectangle = r;
+        return rectangle.length * rectangle.width;
+    }
+}
+```
+
+Adapter
+``` java
+public class CalculatorAdapter implements CalculatorInterface {
+    Calculator calculator;
+    Triangle triangle;
+
+    public CalculatorAdapter(Triangle triangle) {
+        this.triangle = triangle;
+    }
+
+    @Override
+    public double getArea(Rectangle r) {
+        calculator = new Calculator();
+        Rectangle rectangle = new Rectangle();
+
+        rectangle.length = triangle.base;
+        rectangle.width = 0.5 * triangle.height;
+
+        return calculator.getArea(rectangle);
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        System.out.println("**Adapter Pattern**");
+
+        Triangle t = new Triangle(20, 10);
+        CalculatorInterface calculatorInterface = new CalculatorAdapter(t);
+
+        System.out.println("Aread of Triangle: " + calculatorInterface.getArea(null));
+    }
+}
+```
+
+**Class Adapter Implementation**
+``` java
+public interface IntegerValueInterface {
+    int getInteger();
+}
+
+class IntegerValue implements IntegerValueInterface{
+    @Override
+    public int getInteger() {
+        return 5;
+    }
+}
+
+class ClassAdapter extends IntegerValue {
+    @Override
+    public int getInteger() {
+        return 2 + super.getInteger();
+    }
+}
+
+class ObjectAdapter {
+    private IntegerValueInterface myInt;
+
+    public ObjectAdapter(IntegerValueInterface myInt) {
+        this.myInt = myInt;
+    }
+
+    public int getInteger(){
+        return 2 + this.myInt.getInteger();
+    }
+}
+```
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+
+        System.out.println("Class and Object Adapter Demo");
+        ClassAdapter cal = new ClassAdapter();
+        System.out.println("Class Adapter is returning: " + cal.getInteger());
+
+        ObjectAdapter oa = new ObjectAdapter(new IntegerValue());
+        System.out.println("Object Adapter is returning: " + oa.getInteger());
+    }
+}
+```
+
+**(b) Bridge Design Pattern**
+
+**(c) Composite Design Pattern**
+
+**(d) Decorator Design Pattern**
+
+**(e) Facade Design Pattern**
+
+**(f) Flyweight Design Pattern**
+
+**(g) Proxy Design Pattern**
+
+
+___
