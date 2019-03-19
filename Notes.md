@@ -2299,10 +2299,276 @@ public class Client {
     }
 }
 ```
+___
 
 **(b) Bridge Design Pattern**
+The bridge pattern will decouple an abstraction from its implementation so that the two can vary independently
+* decouples implementation class and abstract class by providing a bridge structure between them
+
+We already understand the benefits of decoupling and abstraction
+* decoupling means to have things behave independently from each other
+* abstraction is how different things are related to each other conceptually (hiding details)
+
+Implementations here mean the objects that the abstract class and its derivations use to implement themselves - not the derivations of the abstract class (concrete classes)
+
+This pattern help us to make concrete class functionalities independent from the interface implementer class - can alter these different kind of classes structurally without affecting each other
+
+**When to use the Bridge pattern**
+When you want to avoid a permanent binding between an abstraction and its implementation
+* when the implementation must be selected or switched at run-time
+
+When both the abstractions and their implementations should be extensible by subclassing 
+* lets you combine the different abstraction and implementations and extend them independently
+
+When changes in the implementation of an abstraction should have no impact on clients 
+* clients code should not have to be recompiled
+
+When you want to hide the implementation of an abstraction completely from clients
+
+When you have a ton of implementation classes
+* a class hierarchy indicates the need for splitting an object into two parts
+
+
+**Advantages**
+Decouples an implementation so that it is not bound permanently to an interface
+
+Abstraction and implementation can be extended independently
+* allows you to vary the implementation and the abstraction by placing the two in separate class hierarchies
+
+Changes to the concrete abstraction classes do not affect the client
+
+Adds one more method level redirection to achieve the objective
+
+One **drawback** is that id does slightly increase complexity
+
+**Compared to the Adapter**
+The Adapter patter is geared toward making unrelated classes work together - usually applied to systems after they have been designed
+
+In contrast, the Bridge is used up-front in a design - lets abstractions and implementations vary independently
+
+
+**Implementation Overview**
+There are 2 parts in the Bridge design pattern implementation
+* abstraction - an interface or an abstract class
+* implementation - an interface or abstract class
+
+Allows the abstraction and the implementation to be developed independently
+* the client code can access only the abstraction part
+* client not concerned about the implementation part
+
+The abstraction contains a reference to the implementer
+
+Children of the abstraction are referred to as refined abstractions
+
+Children of the implementer are concrete implementers
+
+Since we can change the reference to the the implementer in the abstraction, we are able to change the abstraction's implementer at run-time
+
+Changes to the implementer do not affect client code
+* increases the loose coupling between class abstraction and its implementation
+
+Implementer
+``` java
+public abstract class Workshop {
+    abstract void work();
+}
+
+// Concrete implementers
+class Produce extends  Workshop{
+    @Override
+    void work() {
+        System.out.println("Produced");
+    }
+}
+
+// Concrete implementers
+class Assemble extends  Workshop{
+    @Override
+    void work() {
+        System.out.println("And Assembled");
+    }
+}
+```
+Abstraction
+``` java
+public abstract class Vehicle {
+    protected Workshop workshop1; // Ref to implementor
+    protected Workshop workshop2; // Ref to implementor
+
+    public Vehicle(Workshop workshop1, Workshop workshop2) {
+        this.workshop1 = workshop1;
+        this.workshop2 = workshop2;
+    }
+
+    abstract void manufacture();
+}
+
+// Refined abstraction
+class Car extends Vehicle{
+    public Car(Workshop workshop1, Workshop workshop2) {
+        super(workshop1, workshop2);
+    }
+
+    @Override
+    void manufacture() {
+        System.out.println("Car ");
+        workshop1.work();
+        workshop2.work();
+    }
+}
+
+// Refined abstraction
+class Bike extends Vehicle{
+    public Bike(Workshop workshop1, Workshop workshop2) {
+        super(workshop1, workshop2);
+    }
+
+    @Override
+    void manufacture() {
+        System.out.println("Bike ");
+        workshop1.work();
+        workshop2.work();
+    }
+}
+```
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        Vehicle vehicle1 = new Car(new Produce(), new Assemble());
+        vehicle1.manufacture();
+
+        Vehicle vehicle2 = new Bike(new Produce(), new Assemble());
+        vehicle2.manufacture();
+
+    }
+}
+```
 
 **(c) Composite Design Pattern**
+The composite design pattern composes objects into tree structures to represent part-whole hierarchies
+* lets clients treat individual objects and compositions of objects uniformly
+
+A composite is an object designed as composition of one-or-more similar objects that all exhibit similar functionality
+* i.e a group of objects that is treated the same way as a single instance of the same type of object
+
+When we have many objects with common functionalities we create a composite object 
+* creates a class that contains a group of its own objects
+
+**Participants**
+**Component** 
+* declares the interface for objects in the composition
+* implements default behavior for the interface common to all classes
+* declares an interface for accessing and managing its child components
+
+**Leaf** 
+* represents leaf objects in the composition - a leaf has no children
+* defines behavior for primitive objects in the composition
+
+**Composite** 
+* defines behavior for components having children (add, remove, etc)
+* stores child components (some data structure, list)
+* implements child-related operations in the Component interface
+
+**Client**
+* Manipulate objects in the composition through the Component interface (does the grouping) 
+
+Component
+``` java
+public interface Employee {
+    void showEmployeeDetails();
+}
+```
+
+Leaf
+``` java
+class Developer implements Employee{
+    private String name;
+    private long empId;
+    private String position;
+
+    public Developer(String name, long empId, String position) {
+        this.name = name;
+        this.empId = empId;
+        this.position = position;
+    }
+
+    @Override
+    public void showEmployeeDetails() {
+        System.out.println(empId + " - " + name + " - " + position);
+    }
+
+}
+
+class Manager implements Employee{
+    private String name;
+    private long empId;
+    private String position;
+
+    public Manager(String name, long empId, String position) {
+        this.name = name;
+        this.empId = empId;
+        this.position = position;
+    }
+
+    @Override
+    public void showEmployeeDetails() {
+        System.out.println(empId + " - " + name + " - " + position);
+    }
+
+}
+```
+
+Composite
+``` java
+public class Directory implements Employee {
+    private List<Employee> employeeList = new ArrayList<>();
+
+    @Override
+    public void showEmployeeDetails() {
+        for(Employee emp: employeeList){
+            emp.showEmployeeDetails();
+        }
+    }
+
+    public void addEmployee(Employee emp){
+        employeeList.add(emp);
+    }
+
+    public void removeEmployee(Employee emp){
+        employeeList.remove(emp);
+    }
+}
+```
+
+Client
+``` java
+public class Company {
+    public static void main(String[] args) {
+        Employee dev1 = new Developer("Josh", 100, "Pro developer");
+        Employee dev2 = new Developer("Jane", 101, "Jnr developer");
+
+        Directory engDirectory = new Directory();
+        engDirectory.addEmployee(dev1);
+        engDirectory.addEmployee(dev2);
+
+        Employee man1 = new Manager("Jen", 200, "SEO Manager");
+        Employee man2 = new Manager("David", 201, "Linux Manager");
+
+        Directory accDirectory = new Directory();
+        accDirectory.addEmployee(man1);
+        accDirectory.addEmployee(man2);
+
+        Directory companyDirectory = new Directory();
+        companyDirectory.addEmployee(engDirectory);
+        companyDirectory.addEmployee(accDirectory);
+        companyDirectory.showEmployeeDetails();
+    }
+}
+```
+
+
+
 
 **(d) Decorator Design Pattern**
 
