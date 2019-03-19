@@ -2566,13 +2566,241 @@ public class Company {
     }
 }
 ```
-
-
-
+___
 
 **(d) Decorator Design Pattern**
+The decorator pattern will allow you to attach additional responsibilities to an object dynamically 
+* allows a user to add new functionality to an existing object without altering its structure
 
+Decorators provide a flexible alternative to sub-classing for extending functionality
+
+The main principle of this pattern says that we cannot modify existing functionalities but we can extend them - open for extension by closed for modification
+
+The core concept applies when we want to add some specific functionalities to some specific object instead of to the whole class
+
+Decorator is used to modify the functionality of an object at runtime
+* Other instance of the same class will not be affected by this, so individual object gets the modified behavior
+
+The decorator pattern will create a set of decorator classes that are used to wrap concrete components - provides additional functionality keeping class methods signature intact
+
+Decorator classes minor the type of the components they decorate - they are the same type as the components they decorate
+
+Decorators change the behavior of their components by adding new functionality before and/or after method calls to the component
+
+You can wrap a component with any number of decorators
+
+Decorators are typically transparent to the client of the component - unless the client is relying on the component's concrete type
+
+**Participants**
+**Components**
+* defines the interface for objects
+* can have responsibilities added to them dynamical
+
+**Concrete Components**
+* defines an object to which additional responsibilities can be attached
+
+**Decorator**
+* maintains a reference to a Component object
+* defines an interface that conforms to Component's interface
+
+**Concrete Decorator**
+* adds responsibilities to the component
+
+The decorator forwards requests to its Component object
+* may optionally perform additional operations before and after forwarding the request
+
+**Example 1**
+``` java
+public abstract class Component {
+    public abstract void doJob();
+}
+
+class ConcreteComponent extends Component{
+    @Override
+    public void doJob() {
+        System.out.println("I am from a Concrete Component - I am closed for modification");
+    }
+}
+```
+``` java
+public abstract class AbstractDecorator extends Component{
+    protected Component com;
+
+    public void setTheComponent(Component c){
+        com = c;
+    }
+
+    @Override
+    public void doJob() {
+        if(com != null){
+            com.doJob();
+        }
+    }
+}
+
+class ConcreteDecorator1 extends AbstractDecorator {
+    @Override
+    public void doJob() {
+        super.doJob();
+        System.out.println("I am explicitly from Example_1");
+    }
+}
+
+class ConcreteDecorator2 extends AbstractDecorator {
+    @Override
+    public void doJob() {
+        System.out.println("");
+        System.out.println("**Start Ex-2**");
+        super.doJob();
+        System.out.println("Explicitly from Example_2");
+        System.out.println("** End, Ex_2**");
+    }
+}
+```
+
+``` java
+public class Client {
+    public static void main(String[] args) {
+        ConcreteComponent cc = new ConcreteComponent();
+
+        ConcreteDecorator1 cd1 = new ConcreteDecorator1();
+        ConcreteDecorator2 cd2 = new ConcreteDecorator2();
+
+        cd1.setTheComponent(cc);
+        cd1.doJob();
+
+        cd2.setTheComponent(cd1);
+        cd2.doJob();
+    }
+}
+```
+``` text
+I am from a Concrete Component - I am closed for modification
+I am explicitly from Example_1
+
+**Start Ex-2**
+I am from a Concrete Component - I am closed for modification
+I am explicitly from Example_1
+Explicitly from Example_2
+** End, Ex_2**
+```
+
+**Example 2**
+``` java
+public class LowerCaseInputStream extends FilterInputStream {
+    public LowerCaseInputStream(InputStream in) {
+        super(in);
+    }
+
+    public int read() throws IOException{
+        int c = in.read();
+        return (c==-1 ? c : Character.toLowerCase((char)c));
+    }
+
+    public int read(byte[] b, int offset, int len) throws IOException{
+        int result = in.read(b, offset, len);
+        for(int i=offset; i<offset+result ;i++){
+            b[i] = (byte) Character.toLowerCase((char)b[i]);
+        }
+        return result;
+    }
+}
+```
+``` java
+public class Client {
+    public static void main(String[] args) {
+        int c;
+
+        StringBuffer stringBuffer = new StringBuffer("Jason Freddie aaaBBBcccDDDeFF");
+        byte[] bytes = stringBuffer.toString().getBytes();
+
+        try(InputStream in = new LowerCaseInputStream(new ByteArrayInputStream(bytes))){
+            while((c = in.read()) >= 0){
+                System.out.print((char)c);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+**Example 3**
+``` java
+public interface Shape {
+    void draw();
+}
+
+
+class Rectangle implements Shape{
+    @Override
+    public void draw() {
+        System.out.println("Rectangle::draw()");
+    }
+}
+
+class Circle implements Shape{
+    @Override
+    public void draw() {
+        System.out.println("Circle::draw()");
+    }
+}
+```
+Decorator
+``` java
+public abstract class ShapeDecorator implements Shape{
+    protected Shape decoratedShape;
+
+    public ShapeDecorator(Shape decoratedShape) {
+        this.decoratedShape = decoratedShape;
+    }
+
+    public void draw(){
+        decoratedShape.draw();
+    }
+}
+
+class RedShapeDecorator extends ShapeDecorator {
+
+    public RedShapeDecorator(Shape shape) {
+        super(shape);
+    }
+
+    @Override
+    public void draw() {
+        decoratedShape.draw();
+        setRedBorder(decoratedShape);
+    }
+
+    public void setRedBorder(Shape decoratedShape){
+        System.out.println("Border color: Red");
+    }
+}
+```
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        Shape circle = new Circle();
+        Shape redCircle = new RedShapeDecorator(new Circle());
+        Shape redRectangle = new RedShapeDecorator(new Rectangle());
+
+        circle.draw();
+        redCircle.draw();
+        redRectangle.draw();
+    }
+}
+```
+``` text
+Circle::draw()
+Circle::draw()
+Border color: Red
+Rectangle::draw()
+Border color: Red
+```
 **(e) Facade Design Pattern**
+
+
 
 **(f) Flyweight Design Pattern**
 
