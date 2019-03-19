@@ -690,7 +690,7 @@ ___
 
 ___
 
-**1. Factory**
+## **1. Factory**
 * one of the most used design patterns in Java
     * a creational pattern
     * factories handle the details of object creation
@@ -720,7 +720,7 @@ Frameworks
 * also useful when implementing parallel class hierarchies 
     * when some of the responsibilities shift from one class to another
 
-**Factory Method Implementation (Abstract Creator)**
+**a. Factory Method Implementation (Abstract Creator)**
 * It is the "strictest" implementation of the pattern
     * the creator class is an abstract class
     * you create a subclass of the creator class for each product type which contains an implementation of the factory method
@@ -810,7 +810,7 @@ public class Client {
 }
 ```
 
-**Factory Method Implementation (Concrete Creator)**
+**b. Factory Method Implementation (Concrete Creator)**
 * this implementation includes creating a single concrete creator class
     * the creator class is concrete class
     * you add implementation code to one factory method to create your product type bases on a parameter passed to the method
@@ -928,10 +928,9 @@ public class Client {
         animal2.walk();
     }
 }
-```
+``
 
-
-**Factory Method Implementation (Static Method)**
+**c. Factory Method Implementation (Static Method)**
 * 3rd implementation of the factory method pattern includes the use of a static method
 * define a factory as a static method is a common technique - often called a static factory
 * this technique is sometimes used so that you do not need to instantiate an object to make use of the create method
@@ -975,7 +974,7 @@ public class Client {
 ```
 ___
 
-**2. Abstract Factory**
+## **2. Abstract Factory**
 **Overview**
 * the abstract factory provides an interface for creating families of related or dependent objects without specifying their concrete classes
     * "factory of factories"
@@ -1153,11 +1152,12 @@ public class Client {
 }
 ```
 ___
-**3. Singleton**
-
+## **3. Singleton**
 
 
 ___
-**4. Builder**
+## **4. Builder**
+
+
 ___
-**5. Prototype**
+## **5. Prototype**
