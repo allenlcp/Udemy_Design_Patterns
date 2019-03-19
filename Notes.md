@@ -1153,7 +1153,35 @@ public class Client {
 ```
 ___
 ## **3. Singleton**
+Singleton pattern is one of the simplest design patterns in java - it comes under creational pattern as this pattern provides one of the best ways to create an object
 
+Ensures a class only has one instance, and provide a global point of access to it
+
+We are taking class and letting it manage a single instance of itself
+> also preventing any other class from creating a new instance on its own
+> to get an instance, you have got to go through the class itself
+
+We are also providing a global access point to the instance
+> whenever you need an instance, just query the class and it will hand you back the single instance
+> a global variable makes an object accessible, but it does not keep you from instantiating multiple objects
+
+**Adv / Disadv of the singleton**
+Controlled access to sole instance
+> because the Singleton class encapsulates its sole instance, it can have strict control over how and when clients access it
+
+Reduced name space
+> an improvement over global variables
+> avoids polluting the name space with global variables that store sole instances
+
+Permits a variable number of instances
+> makes it easy to change your mind and allow more than one instance of the Singleton class
+
+Singletons hinder unit testing
+> might cause issues for writing testable code if the object and the methods associated with it are so tightly coupled that it becomes impossible to test without writing a fully functional class dedicated to the Singleton
+
+Singletons create hidden dependencies
+> because it is readily available throughout the code base, it can be overused
+> since its reference is not completely transparent while passing to different methods, it becomes difficult to track 
 
 ___
 ## **4. Builder**
