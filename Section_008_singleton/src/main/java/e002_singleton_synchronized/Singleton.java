@@ -8,7 +8,7 @@ public class Singleton {
     private int data = 0;
 
     /**
-    * The Singleton Constructor
+    * The MakeACaptain Constructor
     * Note that it is private!
     * No client can instantiate a singleton object!
     */

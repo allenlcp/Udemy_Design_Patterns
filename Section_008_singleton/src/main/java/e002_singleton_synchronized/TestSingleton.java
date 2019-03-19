@@ -8,14 +8,14 @@ public class TestSingleton {
         s.setData(55);
 
         System.out.println("First reference: " + s);
-        System.out.println("Singleton data value is: " + s.getData());
+        System.out.println("MakeACaptain data value is: " + s.getData());
 
         // Get another reference to the singleton
         // Is it the same object?
         s = null;
         s = Singleton.getInstance();
         System.out.println("First reference: " + s);
-        System.out.println("Singleton data value is: " + s.getData());
+        System.out.println("MakeACaptain data value is: " + s.getData());
 
     }
 }

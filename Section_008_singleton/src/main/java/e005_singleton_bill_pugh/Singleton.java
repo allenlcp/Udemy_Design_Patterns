@@ -1,8 +1,6 @@
-package e001_singleton_lazy_initialization;
+package e005_singleton_bill_pugh;
 
 public class Singleton {
-    // the private reference to the one and only instance
-    private static Singleton uniqueInstance = null;
 
     // an instance attribute
     private int data = 0;
@@ -14,12 +12,15 @@ public class Singleton {
     */
     private Singleton(){}
 
-    public static Singleton getInstance(){
-        if (uniqueInstance == null){
-            uniqueInstance = new Singleton();
-        }
+    private static class SingletonHelper{
+        // Nested class is reference after getInstance() is called
+        // the private reference to the one and only instance
+        private static final Singleton uniqueInstance = new Singleton();
 
-        return uniqueInstance;
+    }
+
+    public static Singleton getInstance(){
+        return SingletonHelper.uniqueInstance;
     }
 
     public void setData(int data) {

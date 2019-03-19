@@ -1325,10 +1325,70 @@ public class Singleton {
 }
 ```
 
+**Problem with synchronized approach**
+One big problem is that synchronization may end up being a sever bottleneck
+* all the threads will have to wait for the check on whether the object already exists
+* reduces the performance because of cost associated with the synchronization method
+
+The only time sync is relevant is the first time through this method
+* once we have set the uniqueInstance variable to an instance of Singleton, we have no further need to synchronize this method
+* after the first time through, synchronization is totally uneeded overhead
+
+For most Java app, we need to ensure that the Singleton works in the presence of multiple threads and does not have performance issues
+* use the double checked locking principle
+
+
 **(c) double-checked locking principle approach**
 * thread safe
 * increases performance from the synchronized approach
 
+* this approach will use a synchronized block inside the if condition with an additional check to ensure that only one instance of the singleton class is created
+> intent is to optimize away unnecessary locking, increase performance
+> the synchronization check happens at most one time, so it will not be a bottleneck
+
+* use "double-checked locking" to reduce the use of synchronization in getInstance()
+
+* with double=checked locking, we first check to see if an instance is created, and if not, THEN we synchronize
+> we only synchronize the first time through, just what we want
+
+``` java
+public class Singleton {
+    // the private reference to the one and only instance
+    private volatile static Singleton uniqueInstance = null;
+
+    // an instance attribute
+    private int data = 0;
+
+    /**
+    * The Singleton Constructor
+    * Note that it is private!
+    * No client can instantiate a singleton object!
+    */
+    private Singleton(){}
+
+    // by adding the synchronized keyword to getInstance
+    // we force every thread to wait its turn before it can enter the method
+    public static Singleton getInstance(){
+        if (uniqueInstance == null){
+            synchronized (Singleton.class) { 
+                if (uniqueInstance == null){
+                    uniqueInstance = new Singleton();
+                }
+            }
+        }
+
+        return uniqueInstance;
+    }
+
+    public void setData(int data) {
+        this.data = data;
+    }
+
+    public int getData() {
+        return data;
+    }
+}
+```
 
 **(d) Eager evaluation Approach**
 * if your application always creates and uses an instance of the Singleton
@@ -1336,6 +1396,25 @@ public class Singleton {
 * thread safe
 * the instance is created even though client application might not be using it
 
+* in eager initialization, the instance of Singleton Class is created at the time of class loading
+> the easiest method to create a singleton class
+> it has a drawback that the instance is created even though client application might not be using it
+
+* using this approach, we rely on the JVM to create the unique instance of the Singleton when the class is loaded
+> the JVM guarantees that the instance will be created before any thread accesses that static uniqueInstance variable (threadsafe)
+
+``` java
+public class Singleton{
+    private static Singleton uniqueInstance = new Singleton();
+
+    private Singleton(){}
+
+    public static Singleton getInsntance(){
+        // we already got an instance so just return it
+        return uniqueInstance;
+    }
+}
+```
 
 **(e) Bill Pugh Approach**
 * thread safe
@@ -1344,11 +1423,588 @@ public class Singleton {
 * create the Singleton class using a inner static helper class
 * regarded as the standard method to implement singletons in Java
 
+``` java
+public class Singleton {
 
+    // an instance attribute
+    private int data = 0;
+
+    /**
+    * The Singleton Constructor
+    * Note that it is private!
+    * No client can instantiate a singleton object!
+    */
+    private Singleton(){}
+
+    private static class SingletonHelper{
+        // Nested class is reference after getInstance() is called
+        // the private reference to the one and only instance
+        private static final Singleton uniqueInstance = new Singleton();
+
+    }
+
+    public static Singleton getInstance(){
+        return SingletonHelper.uniqueInstance;
+    }
+
+    public void setData(int data) {
+        this.data = data;
+    }
+
+    public int getData() {
+        return data;
+    }
+}
+```
 
 ___
 ## **4. Builder**
+The builder design pattern separates the construction of a complex object from its representation
+* uses the same construction processes to create the same object - however, these processes can create different representations of the object
+* uses simple objects and a step by step approach to create the object
+* the builder class is independent of the other objects
 
+Useful when creating the object is very complex and is independent of the assembly of the parts of the object
+
+An example would be creating your own computer
+* different parts are assembled depending upon the order received by the customer
+> a customer can demand a 500 GB hard disk with an Intel processor
+> another customer can choose a 250 GB hard disk with an AMD processor
+
+Building a vacation planner for Disney World
+* guests can choose a hotel and various types of admission tickets
+* make restaurant reservations, and even book special events
+
+You need a flexible design
+* each guest's planner can vary in the number of days and types of activities it includes
+* a local resident might not need a hotel, but wants to make dinner and special event reservations
+* another guest might by flying into Orlando and needs, a hotel , dinner reservations and admission tickets
+
+We encapsulate the creation of the trip planner in an object (a builder)
+* have our client ask the builder to construct the trip planner structure for it
+
+You need a flexible data structure that can represent guest planners and all their variations
+
+You also need a follow a sequence of potentially complex steps to create the planner
+
+The builder design pattern can provide a way to create the complex structure without mixing it with the steps for creating it
+
+**Why the Builder Pattern**
+This pattern was introduced to solve problems with the Factory and Abstract Factory design patterns
+* these pattern do not work well when the Object to be created contains a lot of attributes
+
+There are 3 major issues
+* too many arguments to pass from the client to the Factory class
+> can be error prone
+> its hard to maintain the order of the arguments on the client side
+
+* some of the parameters might be optional
+> in the factory pattern we are forced to send all the parameters - optional parameters need to be sent as NULL
+
+* if the object is heavy and its creation is complex
+> all the complexity will be part of factory classes which can cause major confusion
+
+One way to solve the optional parameters problem
+* provide a constructor with required parameters and then different setter methods to set the optional parameters - however, the Object state will be inconsistent until/unless all the attributes are set explicitly
+
+A better approach is to use the Builder pattern
+* provides a way to build the object step-by-step
+* provides a method that will actually return the final complex object
+
+**Advantages**
+It encapsulates the way a complex object is constructed
+* separates the code of assembling from its representation
+* hides the complex construction process and represents it as simple process
+
+Allows objects to be constructed in a multistep and varying process (as opposed to one-step factories)
+
+Hides the internal representation of the product from the client
+
+Product implementations can be swapped in and out because the client only sees an abstract interface
+
+Focuses on "how the product will be made"
+
+**Disadvantages**
+Often used for building composite structures
+
+Constructing objects requires more domain knowledge of the client than when using a Factory
+
+Requires some amount of code duplication
+
+**Summary**
+Use the Builder pattern when
+* the algorithm for creating a complex object should be independent of the parts that make the object and how they are assembled
+* the construction process must allow different representations for the object that is constructed
+
+We should not use this pattern if we want a mutable object
+* an object which can be modified after the creational process is over
+
+
+**Implementation Overview**
+The main participants when implementing the builder pattern are the following
+
+Builder
+* specifies an abstract interface for creating parts of a Product object
+* defines an operation for each component that a director may ask it to create
+* must be general enough to allow the construction of products for all kinds of concrete builders
+
+
+ConcreteBuilder
+* constructs and assembles parts of the product by implementing the Builder interface - overrides operations for components it is interested in creating
+* defines and keeps track of the representation it creates
+> usually appended to the product via some type of list
+> sometimes you might need access to parts of the product constructed earlier - a builder would return child nodes to the director, which then would pass them back to the builder to build the parent nodes
+* provides an interface for retrieving the product (GetProduct())
+
+
+Director
+* constructs an object using the Builder interface
+
+Product
+* represents the complex object under construction
+* ConcreteBuilder builds the product's internal representation and defines the process by which it is assembled
+* includes classes that define the constituent parts, including interfaces for assembling the parts into the final result
+
+
+The client creates the Director object - configures it with the desired Builder object
+
+The Director notifies the builder whenever a part of the product should be built
+
+The Builder handles requests from the director and adds parts to the product 
+
+The client retrieves the product from the builder
+
+Builder
+``` java
+public interface BuilderInterface {
+    void buildBody();
+    void insertWheels();
+    void addHeadlights();
+    Product getVehicle();
+}
+```
+
+ConcreteBuilder
+``` java
+class Car implements BuilderInterface{
+    private Product product = new Product();
+
+    @Override
+    public void buildBody() {
+        product.add("This is a body of a car");
+    }
+
+    @Override
+    public void insertWheels() {
+        product.add("4 wheels are added");
+    }
+
+    @Override
+    public void addHeadlights() {
+        product.add("2 headlights are added");
+    }
+
+    @Override
+    public Product getVehicle() {
+        return product;
+    }
+}
+
+class MotoCycle implements BuilderInterface{
+    private Product product = new Product();
+
+    @Override
+    public void buildBody() {
+        product.add("This is a body of a motocycle");
+    }
+
+    @Override
+    public void insertWheels() {
+        product.add("2 wheels are added");
+    }
+
+    @Override
+    public void addHeadlights() {
+        product.add("1 headlights are added");
+    }
+
+    @Override
+    public Product getVehicle() {
+        return product;
+    }
+}
+```
+
+Product
+``` java
+public class Product {
+    private LinkedList<String> parts;
+
+    public Product() {
+        this.parts = new LinkedList<>();
+    }
+
+    public void add(String part){
+        parts.addLast(part);
+    }
+
+    public void show(){
+        System.out.println("\nProduct completed as below");
+        for(String s : parts){
+            System.out.println(s);
+        }
+    }
+}
+```
+
+Director
+``` java
+public class Director {
+    BuilderInterface myBuilder;
+
+    public void construct(BuilderInterface builder){
+        myBuilder = builder;
+
+        myBuilder.buildBody();
+        myBuilder.insertWheels();
+        myBuilder.addHeadlights();
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        System.out.println("***Builder Pattern***\n");
+
+        Director director = new Director();
+
+        BuilderInterface carBuilder = new Car();
+        BuilderInterface motorBuilder = new MotoCycle();
+
+        // making a car
+        director.construct(carBuilder);
+        Product p1 = carBuilder.getVehicle();
+        p1.show();
+
+        // making a motocycle
+        director.construct(motorBuilder);
+        Product p2 = motorBuilder.getVehicle();
+        p2.show();
+
+    }
+}
+```
+___
+
+## **5. Prototype**
+Prototype pattern refers to creating a duplicate object while keeping performance in mind
+* specifies the kinds of objects to create using a prototypical instance, and creates new objects by copying this prototype
+
+Used when creation of an object is costly, requires a lot of time and resources and you have a similar object already existing
+* creating a new instance is normally treated as an expensive operation
+* focus here is to reduce the expense of this creational process of a new instance
+
+Provides a mechanism to copy the original object to a new object and then modify it according to our needs 
+* uses java cloning to copy the object (shallow) or de serialization when you need deep copies
+
+A key aspect of this pattern is that the client code can make new instances without knowing which specific class is being instantiated
+
+Mandates that the Object which you are copying should provide the copying feature
+* should not be done by any other class
+* whether to perform a shallow or deep copy of the Object depends on the requirements and design
+
+**When should we use a prototype**
+When a system should be independent of how its products are created, composed, and represented
+* does not care about the creational mechanism of the products
+
+We can use this pattern when we need to instantiate classes at runtime - dynamic loading
+
+When a system must create new objects of many types in a complex class hierarchy
+* you want to build a class hierarchy of factories that parallels the class hierarchy of products
+
+When instances of a class can have one of only a few different combinations of state
+* may be more convenient to install a corresponding number of prototypes and clone them rather than instantiating the class manually, each time with the appropriate state
+
+**Advantages**
+Hides the complexities of making new instances from the client
+
+Provides the option for the client to generate objects whose type is not known
+
+In some circumstances, copying an object can be more efficient than creating a new object
+
+We can include or discard products at runtime
+
+We can create new instances with a cheaper cost
+
+**Disadvantages**
+Each subclass has to implement the cloning mechanism
+
+Implementing the cloning mechanism can be challenging
+* if the objects under consideration do not support copying
+* if there is any kind of circular reference
+
+The Java cloneable interface has some problems
+
+**Implementation Overview**
+When implementing the prototype pattern the following participants are included
+
+**Prototype** - declares an interface for cloning itself
+
+**ConcretePrototype** - implements an operation for cloning itself
+
+**Client** - creates a new object by asking a prototype to clone itself
+
+
+Prototype
+``` java
+public abstract class Shape implements Cloneable {
+    private String id;
+    protected String type;
+
+    abstract void draw();
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    protected Object clone() {
+        Object clone = null;
+
+        try {
+            clone = super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+
+        return clone;
+    }
+}
+```
+
+Concrete Prototype
+``` java
+
+class Rectangle extends Shape {
+    public Rectangle() {
+        type = "Rectangle";
+    }
+
+    public void draw() {
+        System.out.println("Inside Rectangle::draw() method");
+    }
+}
+
+class Square extends Shape {
+    public Square() {
+        type = "Square";
+    }
+
+    public void draw() {
+        System.out.println("Inside Square::draw() method");
+    }
+}
+
+class Circle extends Shape {
+    public Circle() {
+        type = "Circle";
+    }
+
+    public void draw() {
+        System.out.println("Inside Circle::draw() method");
+    }
+}
+```
+
+``` java
+public class ShapeCache {
+
+    private static Hashtable<String, Shape> shapeMap = new Hashtable<String, Shape>();
+
+    public static Shape getShape(String shapeId){
+        Shape cachedShape = shapeMap.get(shapeId);
+        return (Shape) cachedShape.clone();
+    }
+
+    public static void loadCache(){
+        Circle circle = new Circle();
+        circle.setId("1");
+        shapeMap.put(circle.getId(), circle);
+
+
+        Square square = new Square();
+        square.setId("2");
+        shapeMap.put(square.getId(), square);
+
+
+        Rectangle rectangle  = new Rectangle();
+        rectangle.setId("3");
+        shapeMap.put(rectangle.getId(), rectangle);
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        ShapeCache.loadCache();
+
+        Shape cloneShape1 = (Shape) ShapeCache.getShape("1");
+        System.out.println(cloneShape1.getType());
+        Shape cloneShape2 = (Shape) ShapeCache.getShape("2");
+        System.out.println(cloneShape2.getType());
+        Shape cloneShape3 = (Shape) ShapeCache.getShape("3");
+        System.out.println(cloneShape3.getType());
+    }
+}
+```
+
+**Overview**
+Prototype design pattern involves implementing the cloneable interface
+
+Java provides a mechanism for cloning of objects that is very easy to implement
+
+Your first need to implement the Cloenable interface
+
+You then need to define a clone() method that should handle CloneNotSupportedException
+* returns a shallow copy of the object - a shallow copy means if the copied object contains references to other objects, these objects are not cloned
+* a deep copy would clone even referenced objects
+
+Lastly, we call the clone() method of the superclass
+
+``` java
+class Person implements Cloneable{ // Step 1
+    private String name;
+    private City city; // deep copy
+
+    // no @override means we are not overriding clone
+    public person clone() throws CloneNotSupportedException { // Step 2
+        Person clonedObj = (Person) super.clone(); // Step 3
+        clonedObj.city = this.city.clone(); // Making deep copy of city
+        return clonedObj;
+    }
+}
+```
+
+**Problems with the Cloneable interface**
+Some academics think that cloning is deeply broken in Java
+
+The Cloneable interface lacks the clone() method
+* Cloneable is a marker interface and does not have any methods in it
+* We still need to implement it just to tell the JVM that we can perform clone() on our object
+
+Object.clone() is protected
+* We have to provide our own clone() and indirectly call Object.clone() from it
+
+We do not have any control over object construction because Object.clone() does not invoke any constructor
+* there are no guarantees that it preserves the invariants established by the constructors
+
+If we are writing a clone method in a child class then all of its superclasses should refine the clone() method - otherwise, the super.clone() chain will fail
+
+Object.clone() supports only shallow copying
+* does not clone the reference fields of the object to be cloned
+* we need to implement clone() in every class whose reference our class is holding 
+* then call their clone separately in our clone () method
+
+We can not manipulate final fields in Object.clone()
+* final fields can only be changed through constructors
+* if we want every object to be unique by including an id, we will get the duplicate object
+* if we use Object.clone() = will not call the constructor, and final id field can not be modified form invoking the clone() method
+
+You can not do a polymorphic clone operation
+* if I have an array of Cloneable, you would think that I could run down that array and clone every element to make a deep copy of the array
+* this does not work, you cannot cast something to Cloneable and call the clone method
+* Cloneable does not have a public clone method and neither does Object
+* If you try to cast to Cloneable and call the clone method, the compiler will say you are trying to call the protected clone method on object
+
+The clone generally shares state with the object being cloned
+* If that state is mutable, you don not have two independent objects
+* if you modify one, the other changes as well and all of a sudden, you get random behavior
+
+Cloneable is a weak spot, and you should be aware of its limitations
+
+
+**Alternatives to using Clonable (Copy Constructor)**
+One option to provide copy functionality is to provide a copy constructor(s)
+* like a regular constructor, which returns a new instance of the class
+* as an input, it has an object, which is supposed to be copied
+* inside the body of the constructor, you implement your custom cloning logic
+
+
+This method of copying objects is one of the most popular among the developer community
+* overcomes every design issue of Object.clone()
+* provides better control over object construction
+
+``` java
+public Person(Person original){
+    this.id = original.id + 1;
+    this.name = new String(original.name);
+    this.city = new City(original.city);
+}
+```
+
+
+**Advantages of Copy Constructors vs clone()**
+Does not force us to implement any interface or throw exception
+
+Does not require any casts
+
+Does not require us to depend on an unknown object creation mechanism
+
+Does not require parent classes to follow any contract or implement anything
+
+Allows us to modify final fields
+
+Allows us to have complete control over object creation - we can write our own initialization login in it
+
+We can also create conversion constructors - allow us to convert one object to another object
+
+
+**Alternatives to using Clonable (Serialization)**
+Another way to copy an object is to use a serialize/deserialize approach - instead of cloning, you can serialize an object and then immediately deserialize it - would result in a new instance created
+
+We will still not be able to modify the final fields
+
+We still do not have any control on object construction
+
+We still need to implement Serialize which is similar to Cloneable
+
+The serialization process is slower than Object.clone()
+
+``` java
+public Person copy(Person original){
+    try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("data.obj"));
+    ObjectInputStream in = new ObjectInputStream(new FileInputStream("data.obj"))) {
+        out.writeObject(original);
+        return (Person) in.readObject();
+    } catch (Exception e){
+        throw new RuntimeException(e);
+    }
+}
+```
+
+**Advantages of cloning using serialization**
+Simple alternative to cloning - especially when using library such as Apache Commons
+
+Provides deep cloning
+
+Suitable even for complex object graphs
+
+Can be used on existing classes that currently provide just shallow copy
 
 ___
-## **5. Prototype**

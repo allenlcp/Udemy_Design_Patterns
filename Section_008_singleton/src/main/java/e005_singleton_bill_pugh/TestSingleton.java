@@ -1,4 +1,4 @@
-package e001_singleton_lazy_initialization;
+package e005_singleton_bill_pugh;
 
 public class TestSingleton {
     public static void main(String[] args) {

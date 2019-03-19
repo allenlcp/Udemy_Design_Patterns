@@ -1,4 +1,4 @@
-package e001_singleton_lazy_initialization;
+package e003_singleton_double_checked_locking_principle;
 
 public class TestSingleton {
     public static void main(String[] args) {

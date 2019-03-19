@@ -1,8 +1,8 @@
-package e001_singleton_lazy_initialization;
+package e003_singleton_double_checked_locking_principle;
 
 public class Singleton {
     // the private reference to the one and only instance
-    private static Singleton uniqueInstance = null;
+    private volatile static Singleton uniqueInstance = null;
 
     // an instance attribute
     private int data = 0;
@@ -14,9 +14,15 @@ public class Singleton {
     */
     private Singleton(){}
 
+    // by adding the synchronized keyword to getInstance
+    // we force every thread to wait its turn before it can enter the method
     public static Singleton getInstance(){
         if (uniqueInstance == null){
-            uniqueInstance = new Singleton();
+            synchronized (Singleton.class) {
+                if (uniqueInstance == null){
+                    uniqueInstance = new Singleton();
+                }
+            }
         }
 
         return uniqueInstance;
