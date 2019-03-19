@@ -1183,6 +1183,169 @@ Singletons create hidden dependencies
 * because it is readily available throughout the code base, it can be overused
 * since its reference is not completely transparent while passing to different methods, it becomes difficult to track 
 
+**Singleton vs Dependency Injection**
+We know DI is a tech whereby one object supplies the dependencies of another object
+* enables you to replace dependencies without changing the class that uses them
+
+DI can also be used to avoid statics (one of the most common reasons to use it)
+
+We know that singletons ensure only one instance of an object
+
+Using DI, you can use constructor or setter injection to pass around a single object
+* have the injector create a single object and then inject it via the constructor or setter of any dependent objects
+* implements the singleton with less dependencies
+
+...more
+
+**Overview**
+To implement the Singleton pattern, there are different approaches but all of them have the following common concepts:
+* private constructor to restrict instantiation of the class from other class
+* private static variable of the same class that is the only instance of the class
+* public static method that returns the instance of the class - is the global access point for outer world to get the instance of the singleton class
+
+**Approaches**
+There are 5 main approaches when implementing the singleton pattern:
+
+**(a) Lazy evaluation approach**
+* It is not multi-thread safe
+* use this approach if you are not worried about multiple threads
+* this is not a recommended approach
+
+Singleton class
+``` java
+public class Singleton {
+    // the private reference to the one and only instance
+    private static Singleton uniqueInstance = null;
+
+    // an instance attribute
+    private int data = 0;
+
+    /**
+    * The Singleton Constructor
+    * Note that it is private!
+    * No client can instantiate a singleton object!
+    */
+    private Singleton(){}
+
+    public static Singleton getInstance(){
+        if (uniqueInstance == null){
+            uniqueInstance = new Singleton();
+        }
+
+        return uniqueInstance;
+    }
+
+    public void setData(int data) {
+        this.data = data;
+    }
+
+    public int getData() {
+        return data;
+    }
+}
+```
+Client
+``` java
+public class TestSingleton {
+    public static void main(String[] args) {
+        Singleton s = Singleton.getInstance();
+
+        // set the data value
+        s.setData(55);
+
+        System.out.println("First reference: " + s);
+        System.out.println("Singleton data value is: " + s.getData());
+
+        // Get another reference to the singleton
+        // Is it the same object?
+        s = null;
+        s = Singleton.getInstance();
+        System.out.println("First reference: " + s);
+        System.out.println("Singleton data value is: " + s.getData());
+
+    }
+}
+```
+
+**Problems with lazy initialization approach**
+* The implementation is not thread safe
+* Suppose two calls to getInstance() are made at virtually the same time
+* the first thread checks to see whether the instance exists.  It does not, it goes into the part of the code that will create the new instance 
+* however, before it has done that, suppose a second thread also looks to see whether the instance member is null - because the first thread has not created anything yet, the instance is still equal to null, so the second thread also goes into the code that will create and object
+* both threads now perform a new on the Singleton object, thereby creating two objects
+* if the Singleton is absolutely stateless, then thread safety may not be a problem
+* if the Singleton has state, and if you expect that when one object changes the state, all other objects should see the change, then this could become a serious problem - the first thread will be interacting with a different object than all other threads do
+* inconsistent state between threads using the different Singleton objects
+* if the object creates a connection, there will actually be two connections (one for each object)
+* if a counter is used, there will be two counters
+* it may be very difficult to find these problems:
+> dual creation is very intermittent - it usually won't happen
+> it may not be obvious why the counts are off, because only one client object will contain one of the Singleton objects while all the other client objects will refer to the other Singleton
+
+
+
+**(b) Synchronized Approach**
+* thread safe
+* use when performance is not critical to you application, but it is multi-threaded
+* straightforward and effective
+
+Just 'synchronized' the getInstance() method
+``` java
+public class Singleton {
+    // the private reference to the one and only instance
+    private static Singleton uniqueInstance = null;
+
+    // an instance attribute
+    private int data = 0;
+
+    /**
+    * The Singleton Constructor
+    * Note that it is private!
+    * No client can instantiate a singleton object!
+    */
+    private Singleton(){}
+
+    // by adding the synchronized keyword to getInstance
+    // we force every thread to wait its turn before it can enter the method
+    public static synchronized Singleton getInstance(){
+        if (uniqueInstance == null){
+            uniqueInstance = new Singleton();
+        }
+
+        return uniqueInstance;
+    }
+
+    public void setData(int data) {
+        this.data = data;
+    }
+
+    public int getData() {
+        return data;
+    }
+}
+```
+
+**(c) double-checked locking principle approach**
+* thread safe
+* increases performance from the synchronized approach
+
+
+**(d) Eager evaluation Approach**
+* if your application always creates and uses an instance of the Singleton
+* does not use a lot of resources
+* thread safe
+* the instance is created even though client application might not be using it
+
+
+**(e) Bill Pugh Approach**
+* thread safe
+* high performance
+* ensures that the instance is only created if a client needs it
+* create the Singleton class using a inner static helper class
+* regarded as the standard method to implement singletons in Java
+
+
+
 ___
 ## **4. Builder**
 
