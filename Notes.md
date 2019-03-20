@@ -3281,7 +3281,7 @@ A proxy object can act as teh intermediary between the client and the target obj
 
 Another common use ase is to provide a wrapper implementation for better performance
 
-**Types of Proxies**
+**Types of Proxies**  
 **remote** 
 * manages interaction between a client and a remote object
 * provides a reference to an object located in a different address space on the same or different machine
