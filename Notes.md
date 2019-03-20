@@ -1,4 +1,4 @@
-## Overview
+## **0. Overview**
 23 design patterns 
 * Divided into 3 types (gang of four) - organised by purpose (reflects what a pattern does)
     * Creational - concern the process of object creation
@@ -10,9 +10,9 @@
     * object patterns deal with object relationships, which can be changed at run-time and are more dynamic - describes how objects can be composed into larger structure using object composition or by including objects within other objects
 
 
-## **Software Design Principles**
+## **0.1 Software Design Principles**
 
-**Programming to an interface**
+**0.1.1 Programming to an interface**
 * the word interface is overloaded
     * there is the concept of interface, but there is also the Java construct interface
     * you can program to an interface, without having to actually use a Java interface
@@ -36,7 +36,7 @@
 
 * the point is to exploit polymorphism by programming to a supertype so that the actual runtime object is not locked into the code
 ___
-**Abstract Classes vs Interfaces**
+**0.1.2 Abstract Classes vs Interfaces**
     * with support of default methods interfaces since the launch of Java 8, the gap between when to use an interface and when to use an abstract classes has been reduced
 
     * var in interfaces are **public static final** 
@@ -94,8 +94,7 @@ public class Computer{
 }
 ```
 ___
-
-**Composition vs Inheritance**
+**0.1.3 Composition vs Inheritance**
 
 Composition
 * composition is refereed as a HAS-A relationship between classes in OO design - an object contains(owns) another object as a member var of its class
@@ -131,8 +130,7 @@ Aggregation
 * composition allows for code reuse from final classes - impossible with inheritance because you cannot extend a final class in Java
 
 ___
-
-**Delegation Principles**
+**0.1.4 Delegation Principles**
 * delegation is the concept of one class "delegating" its behavior to another class
     * don't do all stuff by yourself, delegate it to a respective class
     * when you delegate, you are simply calling up some class which knows what must be done
@@ -192,8 +190,7 @@ public class DelegationExample {
 ```
 ___
 
-
-## **Single Responsibility**
+## **1.1 Single Responsibility**
 * states that every class should have responsibility over a single part of the functionality provided by the software
     * the responsibility should be entirely encapsulated by the class
     * all its methods should be narrowly aligned with that responsibility
@@ -285,7 +282,7 @@ public class Finance {
 ```
 ___
 
-## **Open Closed Principle**
+## **1.2 Open Closed Principle**
 
 * Bertrand Meyer proposed the open-closed principle (OCP)
     * classes and methods should be open for extension (new functionality) and closed for modification
@@ -376,7 +373,7 @@ class AreaCalculator{
 ```
 ___
 
-## **Liskov Substition Principle**
+## **1.3 Liskov Substition Principle**
 * was introduced by Barbara Liskov
 
 * the principle defines that objects of a superclass can be replaceable with objects of its superclasses without breaking the application
@@ -393,7 +390,7 @@ ___
 * in order to follow LSP the subclass must enhance functionality, but not reduce functionality
 ___
 
-## **Interface Segregation Principle**
+## **1.4 Interface Segregation Principle**
 * was defined by Robert C. Martin
 
 * "Clients should not be forced to depend upon interfaces that they do not use"
@@ -534,7 +531,7 @@ Refactored
 
 ___
 
-## **Dependency Inversion**
+## **1.5 Dependency Inversion**
 * no var should hold a reference to a concrete class - use the factory design pattern to avoid this
 * no class should subclass from a concrete class
     * if you subclass from a concrete class, you are depending on a concrete class
@@ -550,7 +547,7 @@ ___
 
 ___
 
-## **Dependency Injection**
+## **1.5 Dependency Injection**
 
 **Dependencies**
 * a Java class has a dependency on another class, if it uses an instance of this class
@@ -642,7 +639,7 @@ public class Client implements ServiceSetter{
 ```
 ___
 
-## **Creational Design Patterns**
+## **2. Creational Design Patterns**
 * a program should not depend on how objects are created and arranged
 
 * instantiation is an activity that should not always be done in public and can often lead to coupling problems
@@ -690,7 +687,7 @@ ___
 
 ___
 
-## **1. Factory**
+## **2.1 Factory**
 * one of the most used design patterns in Java
     * a creational pattern
     * factories handle the details of object creation
@@ -974,7 +971,7 @@ public class Client {
 ```
 ___
 
-## **2. Abstract Factory**
+## **2.2 Abstract Factory**
 **Overview**
 * the abstract factory provides an interface for creating families of related or dependent objects without specifying their concrete classes
     * "factory of factories"
@@ -1152,7 +1149,7 @@ public class Client {
 }
 ```
 ___
-## **3. Singleton**
+## **2.3 Singleton**
 Singleton pattern is one of the simplest design patterns in java - it comes under creational pattern as this pattern provides one of the best ways to create an object
 
 Ensures a class only has one instance, and provide a global point of access to it
@@ -1458,7 +1455,7 @@ public class Singleton {
 ```
 
 ___
-## **4. Builder**
+## **2.4 Builder**
 The builder design pattern separates the construction of a complex object from its representation
 * uses the same construction processes to create the same object - however, these processes can create different representations of the object
 * uses simple objects and a step by step approach to create the object
@@ -1698,7 +1695,7 @@ public class Client {
 ```
 ___
 
-## **5. Prototype**
+## **2.5 Prototype**
 Prototype pattern refers to creating a duplicate object while keeping performance in mind
 * specifies the kinds of objects to create using a prototypical instance, and creates new objects by copying this prototype
 
@@ -2009,7 +2006,7 @@ Can be used on existing classes that currently provide just shallow copy
 
 ___
 
-## **Structural Design Pattern**
+## **3. Structural Design Pattern**
 Describes how classes and objects can be combined to form larger structures
 * utilizes inheritance to compose interfaces or implementations
 * structural object patterns describe ways to assemble objects 
@@ -2043,7 +2040,7 @@ Object patterns describe relationships between objects
 * Flyweight Pattern
 * Proxy Pattern
 
-**(a) Adapter Design Pattern**
+## **3.1 Adapter Design Pattern**
 The adapter design pattern converts an interface of a class into another interface that clients expect
 * works as a bridge between two incompatible interfaces = "adapter" does the conversion
 * lets classes work together that could not otherwise
@@ -2301,7 +2298,7 @@ public class Client {
 ```
 ___
 
-**(b) Bridge Design Pattern**
+## **3.2 Bridge Design Pattern**
 The bridge pattern will decouple an abstraction from its implementation so that the two can vary independently
 * decouples implementation class and abstract class by providing a bridge structure between them
 
@@ -2568,7 +2565,7 @@ public class Company {
 ```
 ___
 
-**(d) Decorator Design Pattern**
+## **3.3 Decorator Design Pattern**
 The decorator pattern will allow you to attach additional responsibilities to an object dynamically 
 * allows a user to add new functionality to an existing object without altering its structure
 
@@ -2799,7 +2796,7 @@ Rectangle::draw()
 Border color: Red
 ```
 
-**(e) Facade Design Pattern**
+## **3.4 Facade Design Pattern**
 The facade design pattern provides a unified interface to a set of interfaces in a system
 * defines a higher-level interface that makes teh subsystem easier to use - hide the complexities of the subsystem interfaces
 * does not add any functionality
@@ -2968,7 +2965,7 @@ public class Client {
 }
 ```
 
-**(f) Flyweight Design Pattern**
+## **3.5 Flyweight Design Pattern**
 
 The flyweight pattern uses sharing to support a large number of fine-trained objects efficiently
 
@@ -3267,7 +3264,7 @@ public class Client {
 }
 ```
 
-**g) Proxy Design Pattern**
+## **3.5  Proxy Design Pattern**
 The proxy design pattern provides a surrogate or placehlder for another object to control access to it - used when we want to provide controlled access of a functionality
 
 The formal definiton of a proxy is a person authorized to act for another person
@@ -3391,7 +3388,7 @@ ___
 ___
 
 
-## **3. Behavioral Design Patterns**  
+## **4. Behavioral Design Patterns**  
 These design patterns are specifically concerned with communication between objects
 * characterize complex control flow that is difficult to follow at run-time
 * shift the focus away from flow of control to let you concentrate just on the way objects are interconnected
@@ -3415,7 +3412,7 @@ Concerned with algorithms and the assignment of responsibilities between objects
 * Template
 * Visitor
 
-## **3.1 Chain of Responsiblity**  
+## **4.1 Chain of Responsiblity**  
 The chain of responsiblity pattern avoids coupling the sender of a request to its receiver by giving more than one object a change to handle the request - the chain receiving objects and pass the request along the chain until an object handles it
 
 This pattern processes a series of objects one by one (in a sequential manner) - a source will initiate this processing
@@ -3711,4 +3708,4 @@ EmailErrorHandler processed High priority issue: afsafaEmailsfasfa
 
 ___
 
-## **3.2 Command Design Pattern**
+## **4.2 Command Design Pattern**
