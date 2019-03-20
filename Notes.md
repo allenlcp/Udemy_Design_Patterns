@@ -3290,8 +3290,98 @@ Another common use ase is to provide a wrapper implementation for better perform
 * controls access to an object that is expensive to instantiate
 * allows for the creation of a memory intensive object on demand - object will not be created until it is really needed
 
-**Copy-On-Write**
+**Copy-On-Write** 
 * defers copying(cloning) a target object until required by client actions
 * a form of a virtual proxy
+
+**cache** 
+* provides temporary storate of the results of expensive target operatios so that multiple clients can share the results
+
+**firewall** 
+* protects targets from bad clients (or vice versa)
+
+**synchronization** 
+* provides multiple accesses to a target object
+
+**smart reference** 
+* provides addtional actions whenere a target object is referenced such as counting the number of references to the object
+
+
+**Participants**  
+**Subject** - defines the common interface for RealSubject and Proxy - a proxy can be used anwehere a RealSubject is expected
+**Proxy**  
+* clients interact with the Realsubject through the Proxy
+* maintains a reference that lets the proxy access the real subject
+> controls access the real subject and may be responsible for creating and deleting it
+>* may be needed if the Subject is running on a remote machine
+>* may be needed if the Subject is expensive to create in some way or if access to the subject needs to be protected in some way
+> forwards requests to RealSubject when appropriate (delegatin)
+>* depending on type of proxy
+* provides an interface identical to Subject's so that a proxy can be substituted for the real subject
+* may refer to a Subject if the RealSubject and Subject interfaces are the same
+
+* other responsibilities depend on the kind of proxy:
+> remote proxies are responsible for encoding a request and its arguments and for sending the encoded request to the real subject in a different address space
+> virtual proxies may cache additional information about the real subject so that they can postpone accesing it
+> protection proxies check that the caller has the access permissions required to perform a request
+
+* has the authority the act on behalf of the client to interact with the target object
+
+
+Subject
+``` java
+public interface Internet {
+    void connectTo(String serverhost) throws Exception;
+}
+
+class RealInternet implements Internet{
+    @Override
+    public void connectTo(String serverhost) throws Exception{
+        System.out.println("Connecting to " + serverhost);
+    }
+}
+```
+
+Proxy
+``` java
+public class ProxyInternet implements Internet {
+    private Internet internet = new RealInternet();
+
+    private static List<String> bannedSites;
+
+    static {
+        bannedSites  = new ArrayList<>();
+        bannedSites.add("whatever.com");
+        bannedSites.add("yup.com");
+        bannedSites.add("hello.com");
+        bannedSites.add("first.com");
+    }
+
+    @Override
+    public void connectTo(String serverhost) throws Exception{
+
+        if(bannedSites.contains(serverhost.toLowerCase())){
+            throw new Exception("Access Denied");
+        } else {
+            internet.connectTo(serverhost);
+        }
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        Internet internet = new ProxyInternet();
+        try {
+            internet.connectTo("google.com");
+            internet.connectTo("hello.com");
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+}
+```
 
 ___
