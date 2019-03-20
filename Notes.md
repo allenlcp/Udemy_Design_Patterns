@@ -3281,7 +3281,7 @@ A proxy object can act as teh intermediary between the client and the target obj
 
 Another common use ase is to provide a wrapper implementation for better performance
 
-**Types of Proxies**  
+**Types of Proxies:**  
 **remote** 
 * manages interaction between a client and a remote object
 * provides a reference to an object located in a different address space on the same or different machine
@@ -3290,7 +3290,7 @@ Another common use ase is to provide a wrapper implementation for better perform
 * controls access to an object that is expensive to instantiate
 * allows for the creation of a memory intensive object on demand - object will not be created until it is really needed
 
-**Copy-On-Write** 
+**copy-on-write** 
 * defers copying(cloning) a target object until required by client actions
 * a form of a virtual proxy
 
@@ -3307,7 +3307,7 @@ Another common use ase is to provide a wrapper implementation for better perform
 * provides addtional actions whenere a target object is referenced such as counting the number of references to the object
 
 
-**Participants**  
+**Participants:**  
 **Subject** - defines the common interface for RealSubject and Proxy - a proxy can be used anwehere a RealSubject is expected
 **Proxy**  
 * clients interact with the Realsubject through the Proxy
@@ -3385,3 +3385,330 @@ public class Client {
 ```
 
 ___
+
+## **Summary - section 19** 
+// todo
+___
+
+
+## **3. Behavioral Design Patterns**  
+These design patterns are specifically concerned with communication between objects
+* characterize complex control flow that is difficult to follow at run-time
+* shift the focus away from flow of control to let you concentrate just on the way objects are interconnected
+
+These patterns increase flexibility in carrying out this communication
+
+Provide solutions on how to segregate object to be both dependent and independent
+
+Concerned with algorithms and the assignment of responsibilities between objects
+
+**Behavioral Patterns covered below:**  
+* Chain of Responsibility 
+* Command
+* Interpreter
+* Iterator
+* Mediator
+* Memento
+* Observer
+* State
+* Strategy
+* Template
+* Visitor
+
+## **3.1 Chain of Responsiblity**  
+The chain of responsiblity pattern avoids coupling the sender of a request to its receiver by giving more than one object a change to handle the request - the chain receiving objects and pass the request along the chain until an object handles it
+
+This pattern processes a series of objects one by one (in a sequential manner) - a source will initiate this processing
+
+Lets you send requests to an object implicitly through a chain of candidate objects 
+* after one's processing is done, if anything is still pending, it can be forwarded to the next object in the chain - each receiver contains reference to another receiver
+* we can add new objects anytime (run-time) at the end of a chain
+
+**When to use this pattern?** 
+When you want to decouple a request's sender and receiver
+
+when multiple objects, determined at runtime, are candidates to handle a request
+
+When you do not want to specify handlers explicitly in your code
+
+When you want to issue a request to one of several objects without specifying the receiver explicitly - we expect any of our receivers to handle that request
+
+When multiple objects can handle a request and the handler doesn't have to be a specific object
+
+**Participants** 
+**Handler**
+* defines an interface for handling requests
+* (optional) implments the successor link - dispatches the request to chain of handlers
+
+**ConcreteHandler**
+* handles requests it is responsible for
+* can access its successor
+* if the ConcreteHandler can handler the request, it does so; otherwise it forwards the request to its successor
+
+**Client**
+* initiates the request to a ConcreteHandler object on the chain
+
+**Example 1**
+
+Handler
+``` java
+public interface DispenseChain {
+    void setNextChain(DispenseChain nextChain);
+    void dispense(Currency cur);
+}
+```
+
+ConcreteHandler
+``` java
+class Dollar50 implements DispenseChain {
+    private DispenseChain chain;
+
+    @Override
+    public void setNextChain(DispenseChain nextChain) {
+        chain = nextChain;
+    }
+
+    @Override
+    public void dispense(Currency cur) {
+        if (cur.getAmount() >= 50){
+            int num = cur.getAmount() / 50;
+            int remainder = cur.getAmount() % 50;
+            System.out.println("Dispensing " + num + " 50$ note");
+
+            if (remainder != 0){
+                this.chain.dispense(new Currency(remainder));
+            }
+        } else {
+            this.chain.dispense(cur);
+        }
+    }
+}
+
+
+class Dollar20 implements DispenseChain {
+    private DispenseChain chain;
+
+    @Override
+    public void setNextChain(DispenseChain nextChain) {
+        chain = nextChain;
+    }
+
+    @Override
+    public void dispense(Currency cur) {
+        if (cur.getAmount() >= 20){
+            int num = cur.getAmount() / 20;
+            int remainder = cur.getAmount() % 20;
+            System.out.println("Dispensing " + num + " 20$ note");
+
+            if (remainder != 0){
+                this.chain.dispense(new Currency(remainder));
+            }
+        } else {
+            this.chain.dispense(cur);
+        }
+    }
+}
+
+class Dollar10 implements DispenseChain {
+    private DispenseChain chain;
+
+    @Override
+    public void setNextChain(DispenseChain nextChain) {
+        chain = nextChain;
+    }
+
+    @Override
+    public void dispense(Currency cur) {
+        if (cur.getAmount() >= 10){
+            int num = cur.getAmount() / 10;
+            int remainder = cur.getAmount() % 10;
+            System.out.println("Dispensing " + num + " 10$ note");
+
+            if (remainder != 0){
+                this.chain.dispense(new Currency(remainder));
+            }
+        } else {
+            this.chain.dispense(cur);
+        }
+    }
+}
+```
+Helper class
+``` java
+public class Currency {
+    private int amount;
+
+    public Currency(int amount) {
+        this.amount = amount;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+}
+```
+Client
+``` java
+public class Client {
+    private DispenseChain c1;
+
+    public Client() {
+        // initialize the chain
+        this.c1 = new Dollar50();
+        DispenseChain c2 = new Dollar20();
+        DispenseChain c3 = new Dollar10();
+
+        // set the chain of responsibility;
+        c1.setNextChain(c2);
+        c2.setNextChain(c3);
+    }
+
+    public static void main(String[] args) {
+        Client atm = new Client();
+        while(true){
+            int amount = 0;
+
+            System.out.println("Enter amount to dispense");
+            Scanner input = new Scanner(System.in);
+            amount = input.nextInt();
+
+            if (amount % 10 != 0){
+                System.out.println("Amount should be in multiple of 10s");
+                return;
+            }
+
+            // process the request
+            atm.c1.dispense(new Currency(amount));
+        }
+    }
+}
+```
+
+
+**Example 2**
+
+Handler
+``` java
+public interface ReceiverInterface {
+    boolean processMessage(Message msg);
+    void setNextChain(ReceiverInterface nextChain);
+}
+```
+
+ConcreteHandler
+``` java
+class FaxErrorHandler implements ReceiverInterface{
+    private ReceiverInterface nextReceiver;
+
+    @Override
+    public boolean processMessage(Message msg) {
+        if (msg.text.contains("Fax")){
+            System.out.println("FaxErrorHandler processed " + msg.priority + " priority issue: " + msg.text);
+        } else {
+            if (nextReceiver != null){
+                nextReceiver.processMessage(msg);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void setNextChain(ReceiverInterface nextChain) {
+        this.nextReceiver = nextChain;
+    }
+}
+
+class EmailErrorHandler implements ReceiverInterface{
+    private ReceiverInterface nextReceiver;
+
+    @Override
+    public boolean processMessage(Message msg) {
+        if (msg.text.contains("Email")){
+            System.out.println("EmailErrorHandler processed " + msg.priority + " priority issue: " + msg.text);
+        } else {
+            if (nextReceiver != null){
+                nextReceiver.processMessage(msg);
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void setNextChain(ReceiverInterface nextChain) {
+        this.nextReceiver = nextChain;
+    }
+}
+```
+Helper class
+``` java
+public class Message {
+    public String text;
+    public MessagePriority priority;
+
+    public Message(String text, MessagePriority priority) {
+        this.text = text;
+        this.priority = priority;
+    }
+}
+
+public enum MessagePriority {
+    Normal,
+    High
+}
+
+public class IssueRaiser {
+    public ReceiverInterface setFirstReceiver;
+
+    public IssueRaiser(ReceiverInterface setFirstReceiver) {
+        this.setFirstReceiver = setFirstReceiver;
+    }
+
+    public void raiseMessage(Message msg){
+        if (setFirstReceiver != null){
+            this.setFirstReceiver.processMessage(msg);
+        }
+    }
+}
+```
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        System.out.println("Chain responsibility demo");
+
+        // making the chain first: Fax -> email
+        ReceiverInterface faxHandler, emailHandler;
+
+        // end of chain
+        emailHandler = new EmailErrorHandler();
+
+        // fax handler is before email
+        faxHandler = new FaxErrorHandler();
+        faxHandler.setNextChain(emailHandler);
+
+        // starting point: raiser will raise issues and set the first handler
+        IssueRaiser raiser = new IssueRaiser(faxHandler);
+
+        Message m1 = new Message("Fax afsafasfasfa", MessagePriority.Normal);
+        Message m2 = new Message("Email afsafasfasfa", MessagePriority.High);
+        Message m3 = new Message("afsafaFaxsfasfa", MessagePriority.Normal);
+        Message m4 = new Message("afsafaEmailsfasfa", MessagePriority.High);
+
+        raiser.raiseMessage(m1);
+        raiser.raiseMessage(m2);
+        raiser.raiseMessage(m3);
+        raiser.raiseMessage(m4);
+    }
+}
+```
+``` text
+Chain responsibility demo
+FaxErrorHandler processed Normal priority issue: Fax afsafasfasfa
+EmailErrorHandler processed High priority issue: Email afsafasfasfa
+FaxErrorHandler processed Normal priority issue: afsafaFaxsfasfa
+EmailErrorHandler processed High priority issue: afsafaEmailsfasfa
+```
+
+___
+
+## **3.2 Command Design Pattern**
