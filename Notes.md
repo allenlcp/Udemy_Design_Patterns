@@ -3267,8 +3267,31 @@ public class Client {
 }
 ```
 
+**g) Proxy Design Pattern**
+The proxy design pattern provides a surrogate or placehlder for another object to control access to it - used when we want to provide controlled access of a functionality
 
-**(g) Proxy Design Pattern**
+The formal definiton of a proxy is a person authorized to act for another person
+* an agent or substitute
+* the authority to act for another
 
+There are situations in which a client does not or can not reference an object directly, but wants to stull interact with the object
+* introduces a level of indirection when accessing an object
+
+A proxy object can act as teh intermediary between the client and the target object
+
+Another common use ase is to provide a wrapper implementation for better performance
+
+**Types of Proxies**
+**remote** 
+* manages interaction between a client and a remote object
+* provides a reference to an object located in a different address space on the same or different machine
+
+**virtual**
+* controls access to an object that is expensive to instantiate
+* allows for the creation of a memory intensive object on demand - object will not be created until it is really needed
+
+**Copy-On-Write**
+* defers copying(cloning) a target object until required by client actions
+* a form of a virtual proxy
 
 ___
