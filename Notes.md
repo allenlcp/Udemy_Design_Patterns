@@ -2798,11 +2798,475 @@ Border color: Red
 Rectangle::draw()
 Border color: Red
 ```
+
 **(e) Facade Design Pattern**
+The facade design pattern provides a unified interface to a set of interfaces in a system
+* defines a higher-level interface that makes teh subsystem easier to use - hide the complexities of the subsystem interfaces
+* does not add any functionality
+
+As the name suggests, it means the face of the building
+* people walking past the road can only see this glass face of the building
+* they do not know anything about it, the wiring, the pipes and other complexities
+* hides all the complexities of the building and displays a friendly face
+
+The pattern is basically saying that we need to interact with a system that is easier than the current method, or we need to use the system in a particular way - such as using a 3D drawing program in a 2D way
+
+Facade design pattern is more like a helpder for client applications - does not hide subsystem interfaces from the client
+
+Whether to use Facade or not is completely dependent on client code
+
+Can be applied at any point of development, usually when the number of interfaces grow ans system gets complex
+
+Subsystem interfaces are not aware of Facade and they should not have any reference to the Facade interface
+
+**Why the facade?**
+Subsystems are groups of classes, or group of classes and other subsystems
+
+Structuring a system into subsystems help reduce complexity
+
+The interface exposed by the classes in a subsystem or set of subsystems can become quite complex
+
+One way to reduce this complexity is to introduce a facade object
+* provides a single, simplified interface to the more general facilities of a subsystem
+
+If you need the power of the complex subsystem, it is still there for you to use
+
+**Advantages**
+Shields clients from subsystem components
+* reduces the number of objects that clients deal with
+* makes the subsystem easier to use
+
+The pattern supports loose coupling
+* we emphasize the abstraction and hide the complex details by exposing a simple interface
+* decouples a client form a subsystem of components
+
+Facades help layer a system and the dependencies between objects
+* can eliminate complex or circular dependencies
+
+Reduces compilation dependencies in large software systems
+
+Simplifies porting systems to other platforms
+
+Does not prevent applications from using subsystem classes if they need to - can choose between ease of use and generality
+
+**When to use the facade**
+When you want to provide a simple interface to a complex subsystem
+
+When there are many dependencies between clients and the implementation classes of an abstraction
+* introdice a facade to decouple the subsystem from clients and other subsystems
+* promotes subsystem independence and portability
+
+When you want to layer you subsystems
+* use a facade to define an entry point to each subsystem level
 
 
+**Facade vs Adapter**
+When you need to use an existing class and its interface is not the one you need, use an adapter
+
+When you need to simplify and unity a large interface or complex set of interfaces, use a facade
+
+An adapter changes an interface into one a client expects
+
+A facade decouples a client from a complex subsystem
+
+An adapter wraps an object to change its interface
+A decorator wraps an object to add new behaviours and responbilities
+A facade wraps a set of objects to simplify
+
+
+Facade
+``` java
+public class HomeTheaterFacade {
+    Amplifier amp;
+    Tuner tuner;
+    DvdPlayer dvd;
+    CdPlayer cd;
+    Projector projector;
+    TheaterLights lights;
+    Screen screen;
+    PopcornPopper popper;
+
+    // Constructor for setup
+    public HomeTheaterFacade(Amplifier amp,
+                             Tuner tuner,
+                             DvdPlayer dvd,
+                             CdPlayer cd,
+                             Projector projector,
+                             Screen screen,
+                             TheaterLights lights,
+                             PopcornPopper popper) {
+
+        this.amp = amp;
+        this.tuner = tuner;
+        this.dvd = dvd;
+        this.cd = cd;
+        this.projector = projector;
+        this.screen = screen;
+        this.lights = lights;
+        this.popper = popper;
+    }
+
+    // Call all the required sub-system objects
+    public void watchMovie(String movie) {
+        System.out.println("Get ready to watch a movie...");
+
+        popper.on();
+        popper.pop();
+
+        lights.dim(10);
+        screen.down();
+
+        projector.on();
+        projector.wideScreenMode();
+
+        amp.on();
+        amp.setDvd(dvd);
+        amp.setSurroundSound();
+        amp.setVolume(5);
+
+        dvd.on();
+        dvd.play(movie);
+    }
+
+    // Call all the required sub-system objects
+    public void endMovie() {
+        System.out.println("Shutting movie theater down...");
+        popper.off();
+        lights.on();
+        screen.up();
+        projector.off();
+        amp.off();
+        dvd.stop();
+        dvd.eject();
+        dvd.off();
+    }
+}
+```
+Client
+``` java
+public class Client {
+    public static void main(String[] args)
+    {
+        Amplifier amp = new Amplifier("Top-O-Line Amplifier");
+        Tuner tuner = new Tuner("Top-O-Line AM/FM Tuner", amp);
+        DvdPlayer dvd = new DvdPlayer("Top-O-Line DVD Player", amp);
+        CdPlayer cd = new CdPlayer("Top-O-Line CD Player", amp);
+        Projector projector = new Projector("Top-O-Line Projector", dvd);
+        TheaterLights lights = new TheaterLights("Theater Ceiling Lights");
+        Screen screen = new Screen("Theater Screen");
+        PopcornPopper popper = new PopcornPopper("Popcorn Popper");
+
+        // Setup facade
+        HomeTheaterFacade homeTheater = new HomeTheaterFacade(amp, tuner, dvd, cd,
+                                                                projector, screen, lights, popper);
+        
+        // Call facade method which does all the complex steps
+        // Othwerwise, client would have had to implement all the steps
+        homeTheater.watchMovie("Inception");
+        homeTheater.endMovie();
+    }
+}
+```
 
 **(f) Flyweight Design Pattern**
+
+The flyweight pattern uses sharing to support a large number of fine-trained objects efficiently
+
+The pattern is primarily used to reduce the number of objects created
+* less number of objects reduces the memory usage
+* memory usage is also minimized by sharing data as much as possible - crucial for low memory devides, such as mobile devices or embedded systems
+* performance is also increased
+
+Tries to reuse already existing similar kind objects by storing them
+* one instance of a class can be used to provide many "virtual instances"
+* creates a new object when no matching object is found
+
+Flywieght objects are shared and are immutable
+* cannot be modified once they have been constructed
+
+Flyweight objects are used in multiple contexts simultaneously and acts as an independent object in each context
+* indistinguishable from an instance of the object that is not shared
+
+**Intrinsic vs Extrinsic State**
+Two common terms are used when learning about the flyweight pattern
+* intrinsic state/properties - can be stored in the flyweight object and is shareable
+* extrinsic state/properties - depends on the flyweight's context and is not shareable - client objects define state and pass the extrinsic state to the flyweight
+
+Example:
+A text editor application where we enter characters
+* an object of the Character class is created
+* the attributes of the Character class are name, font and size
+* we do not need to create an object every time a client enters a character since letter 'B' is no different form another 'B'
+* if a client again types a 'B' we simple return the object which we have already created before
+> all of these are intrinsic states (name, font, size)
+> they can be shared amont the different objects as they are similar to each other
+
+If we add more attributes to the Character class
+* row and column - specify the position of a character in the document
+* these attributes will not be similar even for the same characters
+* these states are termed as extrinsic states and cannot be shared amonst objects
+
+**When to use the flyweight**
+When an application uses a large number of objects
+
+When storage costs are high because of the sheer quantity of objects
+
+When many groups of objects may be replaced by relatively few share dobjects (once extrinsic state is removed)
+
+When the application does not depend on object identity - since flyweight objects may be shared, identiy tests will return true for conceptually distinct objects
+
+**Participants**
+**Flyweight** - declares an interface through which flyweights can receive and act on extrinsic state
+
+**ConcreteFlyweight** 
+* implements the Flywieght interface and adds storage (if any)
+* must be sharable
+* any state it stores must be intrinsic - must be independent of the Concreteflyweight object's context
+
+**UnsharedConcrete Flyweight** 
+* not all Flyweight subclasses need to be shared
+* the Flyweight interface enables sharing: it does not enforce it
+* common for UnsharedConcreteFlyweight objects to have ConcreteFlyweight objects as children - at some level in the flyweight object structure
+
+**Flyweight Factory** 
+* creates and manages flyweight objects
+* ensures that flyweights are shared properly
+* when a client requests a flyweight, the FlyweightFactory object supplies an existing instance or creates one, if non exists
+
+**Client** 
+* Maintains a reference to flyweight(s)
+* Computes or stores the extrinsic state of flyweight(s)
+
+**Example 1**
+Flyweight
+``` java
+public interface RobotInterface {
+    void print();
+
+    // extrinsic data is passed as arguments
+    void setColor(String colorOfRobot);
+}
+``` 
+ConcreteFlyweight
+``` java
+class Robot implements RobotInterface  {
+
+    String robotType;
+    public String colorOfRobot;
+
+    public Robot(String robotType) {
+        this.robotType=robotType;
+    }
+    public void setColor(String colorOfRobot) {
+        this.colorOfRobot=colorOfRobot;
+    }
+    @Override
+    public void print() {
+        System.out.println(" This is a " +robotType+ " type robot with "+colorOfRobot+ "color");
+    }
+}
+```
+Factory
+``` java
+class RobotFactory {
+    Map<String, RobotInterface> shapes = new HashMap<>();
+
+    public int totalObjectsCreated() {
+        return shapes.size();
+    }
+
+    public RobotInterface getRobotFromFactory(String robotType) throws Exception {
+        RobotInterface myRobot = null;
+
+        if (shapes.containsKey(robotType)) {
+            myRobot = shapes.get(robotType);
+        } else {
+            switch (robotType) {
+                case "King":
+                    System.out.println("We do not have a King Robot.  So we are creating a King Robot now");
+                    myRobot = new Robot("King");
+                    shapes.put("King", myRobot);
+                    break;
+                case "Queen":
+                    System.out.println("We do not have Queen Robot. So we are creating a Queen Robot now .");
+                    myRobot = new Robot("Queen");
+                    shapes.put("Queen", myRobot);
+                    break;
+                default:
+                    throw new Exception(" Robot Factory can create only King and Queen Robots");
+            }
+        }
+
+        return myRobot;
+
+    }
+}
+```
+Client
+``` java
+public class Client {
+
+    static String getRandomColor() {
+        Random r=new Random();
+        /*You can supply any number of your choice in nextInt argument.
+         * we are simply checking the random number generated is an even number
+         * or an odd number. And based on that we are choosing the color.
+         * For simplicity, we’ll use only two colors—red and green
+         */
+        int random=r.nextInt(20);
+        if(random%2==0) {
+            return "red";
+        }
+        else {
+            return "green";
+        }
+    }
+
+    public static void main(String[] args) throws Exception
+    {
+        RobotFactory myfactory = new RobotFactory();
+        System.out.println("\n***Flyweight Pattern Example***\n");
+
+        Robot shape = null;
+
+        /*Here we are trying to get 3 king type robots*/
+        for (int i = 0; i < 3; i++) {
+            shape =(Robot) myfactory.getRobotFromFactory("King");
+            shape.setColor(getRandomColor());
+            shape.print();
+        }
+
+        /*Here we are trying to get 3 queen type robots*/
+        for (int i = 0; i < 3; i++) {
+            shape =(Robot) myfactory.getRobotFromFactory("Queen");
+            shape.setColor(getRandomColor());
+            shape.print();
+        }
+
+        int NumOfDistinctRobots = myfactory.totalObjectsCreated();
+        System.out.println("\n Finally no of Distinct Robot objects created: "+ NumOfDistinctRobots);
+    }
+}
+```
+**Example 2**
+Flyweight
+``` java
+public interface Player {
+    // extrinsic data
+    void assignWeapon(String weapon);
+    void mission();
+}
+```
+ConcreteFlyweight
+``` java
+class T implements Player{
+    // intrinsic attribute
+    private final String TASK;
+    // extrinsic attribute
+    private String weapon;
+
+    public T() {
+        this.TASK = "Task is to plant a b";
+    }
+
+    @Override
+    public void assignWeapon(String weapon) {
+        this.weapon = weapon;
+    }
+
+    @Override
+    public void mission() {
+        System.out.println("T with weapon " + this.weapon + " | " + this.TASK);
+    }
+
+}
+
+class CT implements Player{
+    // intrinsic attribute
+    private final String TASK;
+    // extrinsic attribute
+    private String weapon;
+
+    public CT() {
+        this.TASK = "Task is to diffuse a b";
+    }
+
+    @Override
+    public void assignWeapon(String weapon) {
+        this.weapon = weapon;
+    }
+
+    @Override
+    public void mission() {
+        System.out.println("CT with weapon " + this.weapon + " | " + this.TASK);
+    }
+}
+```
+Factory
+``` java
+public class PlayerFactory {
+    private static HashMap<String, Player> playerList = new HashMap<>();
+
+    public static int getNumberOfDistinctPlayer(){
+        return playerList.size();
+    }
+
+    public static Player getPlayer(String playerType){
+        Player myPlayer = null;
+
+        if(playerList.containsKey(playerType)){
+            myPlayer = playerList.get(playerType);
+        } else {
+            switch (playerType){
+                case "T":
+                    System.out.println("T created");
+                    myPlayer = new T();
+                    break;
+                case "CT":
+                    System.out.println("CT created");
+                    myPlayer = new CT();
+                    break;
+            }
+            playerList.put(playerType, myPlayer);
+        }
+        return myPlayer;
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+
+    private static String[] playerType = {"T", "CT"};
+    private static String[] weapon = {"AK", "Maverick", "Gut", "Flane", "Stone", "Desert Eagle"};
+
+    private static Player generatePlayer(){
+        Random r = new Random();
+        int index = r.nextInt(playerType.length);
+        return PlayerFactory.getPlayer(playerType[index]);
+    }
+
+    private static String generateWeapon(){
+        Random r = new Random();
+        int index = r.nextInt(weapon.length);
+        return weapon[index];
+    }
+
+    public static void main(String[] args) {
+
+        for (int i=0; i<10; i++){
+            Player p = generatePlayer();
+            p.assignWeapon(generateWeapon());
+            p.mission();
+        }
+
+        System.out.println(PlayerFactory.getNumberOfDistinctPlayer());
+
+    }
+}
+```
+
 
 **(g) Proxy Design Pattern**
 
