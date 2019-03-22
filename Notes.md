@@ -3710,3 +3710,7 @@ ___
 
 ## **4.2 Command Design Pattern**
 
+___
+
+## **4.3 Interpreterß Design Pattern**
+
