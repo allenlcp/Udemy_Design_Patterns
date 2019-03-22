@@ -3709,3 +3709,4 @@ EmailErrorHandler processed High priority issue: afsafaEmailsfasfa
 ___
 
 ## **4.2 Command Design Pattern**
+
