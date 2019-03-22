@@ -7,9 +7,6 @@ apache-tomcat-9.0.16/
 out/
 package-lock.json
 .vscode
-# .classpath
-# .project
-# .settings
 
 ### Maven generated
 target/
