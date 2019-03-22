@@ -3412,7 +3412,7 @@ Concerned with algorithms and the assignment of responsibilities between objects
 * Template
 * Visitor
 
-## **4.1 Chain of Responsiblity**  
+## **4.01 Chain of Responsiblity**  
 The chain of responsiblity pattern avoids coupling the sender of a request to its receiver by giving more than one object a change to handle the request - the chain receiving objects and pass the request along the chain until an object handles it
 
 This pattern processes a series of objects one by one (in a sequential manner) - a source will initiate this processing
@@ -3708,9 +3708,320 @@ EmailErrorHandler processed High priority issue: afsafaEmailsfasfa
 
 ___
 
-## **4.2 Command Design Pattern**
+## **4.02 Command Design Pattern**
 
 ___
 
-## **4.3 Interpreterß Design Pattern**
+## **4.03 Interpreter Design Pattern**
 
+___
+
+## **4.09 Strategy Design Pattern**
+Passing strategy as parameter in method
+
+``` java
+public interface Strategy {
+    int performOperation(int num1, int num2);
+}
+
+class Addition implements Strategy{
+    @Override
+    public int performOperation(int num1, int num2) {
+        return num1 + num2;
+    }
+}
+
+
+class Substration implements Strategy{
+    @Override
+    public int performOperation(int num1, int num2) {
+        return num1 - num2;
+    }
+}
+
+
+class Multiplication implements Strategy{
+    @Override
+    public int performOperation(int num1, int num2) {
+        return num1 * num2;
+    }
+}
+```
+
+``` java
+public class Context {
+    public int execute(Strategy strat, int num1, int num2){
+        return strat.performOperation(num1, num2);
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        Addition add = new Addition();
+        Substration sub = new Substration();
+        Multiplication mul = new Multiplication();
+
+        Context context = new Context();
+        System.out.println(context.execute(add, 10, 5));
+        System.out.println(context.execute(sub, 10, 5));
+        System.out.println(context.execute(mul, 10, 5));
+    }
+}
+```
+___
+
+## **4.10 Template Design Pattern**
+
+Template method, final so subclasses cannot override it
+
+``` java
+abstract class HouseTemplate {
+
+    // template method, final so subclasses cannot override it
+    public final void buildHouse() {
+        buildFoundation();
+        buildPillars();
+        buildWalls();
+        buildWindows();
+        System.out.println("House is built");
+    }
+
+    // default implementation, hook method
+    private void buildWindows() {
+        System.out.println("Building Glass Windows");
+    }
+
+    //methods to be implemented by subclasses
+    public abstract void buildWalls();
+    public abstract void buildPillars();
+
+    private void buildFoundation() {
+        System.out.println("Building foundation with cement, iron rods and sand");
+    }
+}
+
+class WoodenHouse extends HouseTemplate {
+    @Override
+    public void buildWalls() {
+        System.out.println("Building Wooden Walls");
+    }
+
+    @Override
+    public void buildPillars() {
+        System.out.println("Building Pillars with Wood coating");
+    }
+}
+
+class GlassHouse extends HouseTemplate {
+    @Override
+    public void buildWalls() {
+        System.out.println("Building Glass Walls");
+    }
+
+    @Override
+    public void buildPillars() {
+        System.out.println("Building Pillars with glass coating");
+    }
+}
+```
+
+``` java
+public class Client {
+    public static void main(String[] args) {
+        HouseTemplate houseType = new WoodenHouse();
+
+        // using template method
+        houseType.buildHouse();
+
+        System.out.println("************");
+
+        houseType = new GlassHouse();
+        houseType.buildHouse();
+    }
+}
+```
+
+___
+
+## **4.11 Visitor Design Pattern**
+
+-> use overloading
+``` java
+public interface Visitable {
+    void accept(Visitor visitor);
+}
+
+class Book implements Visitable {
+    double price;
+    double weight;
+
+    public Book(double price, double weight) {
+        this.price = price;
+        this.weight = weight;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+}
+
+class CD implements Visitable {
+    double price;
+    double weight;
+
+    public CD(double price, double weight) {
+        this.price = price;
+        this.weight = weight;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+}
+
+class DVD implements Visitable {
+    double price;
+    double weight;
+
+    public DVD(double price, double weight) {
+        this.price = price;
+        this.weight = weight;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    @Override
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
+    }
+}
+```
+
+``` java
+public interface Visitor {
+    void visit(Book book);
+    void visit(CD cd);
+    void visit(DVD dvd);
+    double getTotalPostage();
+}
+
+class USPostageVisitor implements Visitor{
+    private double totalPostageForCart = 0;
+
+    @Override
+    public void visit(Book book) {
+        if(book.getPrice() < 20) {
+            totalPostageForCart += book.getWeight() * 2;
+        }
+    }
+
+    @Override
+    public void visit(CD cd) {
+        if(cd.getPrice() < 20) {
+            totalPostageForCart += cd.getWeight() * 2.5;
+        }
+    }
+
+    @Override
+    public void visit(DVD dvd) {
+        if(dvd.getPrice() < 20) {
+            totalPostageForCart += dvd.getWeight() * 3;
+        }
+    }
+
+    public double getTotalPostage(){
+        return totalPostageForCart;
+    }
+}
+
+
+class SouthAmericaSPostageVisitor implements Visitor{
+    private double totalPostageForCart = 0;
+
+    @Override
+    public void visit(Book book) {
+        if(book.getPrice() < 30) {
+            totalPostageForCart += (book.getWeight() * 2) * 2;
+        }
+    }
+
+    @Override
+    public void visit(CD cd) {
+        if(cd.getPrice() < 30) {
+            totalPostageForCart += (cd.getWeight() * 2.5) * 2;
+        }
+    }
+
+    @Override
+    public void visit(DVD dvd) {
+        if(dvd.getPrice() < 30) {
+            totalPostageForCart += (dvd.getWeight() * 3) * 2;
+        }
+    }
+
+    public double getTotalPostage(){
+        return totalPostageForCart;
+    }
+}
+
+```
+
+Client
+
+``` java
+public class Client {
+
+    public static double calculateTotalCost(List<Visitable> myList, Visitor visitor){
+        for (Visitable el : myList){
+            el.accept(visitor);
+        }
+        double postage = visitor.getTotalPostage();
+        return postage;
+
+    }
+
+    public static void main(String[] args) {
+        List<Visitable> myList = new ArrayList<>();
+        myList.add(new Book(10,10));
+        myList.add(new CD(20,20));
+        myList.add(new Book(30,30));
+        myList.add(new DVD(40,40));
+
+        Visitor usVisitor = new USPostageVisitor();
+        Visitor saVisitor = new SouthAmericaSPostageVisitor();
+
+        double usCost = calculateTotalCost(myList, usVisitor);
+        double saCost = calculateTotalCost(myList, saVisitor);
+
+        System.out.println("US cost: " + usCost);
+        System.out.println("South America cost: " + saCost);
+    }
+}
+```
