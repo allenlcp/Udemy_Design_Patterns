@@ -3709,10 +3709,458 @@ EmailErrorHandler processed High priority issue: afsafaEmailsfasfa
 ___
 
 ## **4.02 Command Design Pattern**
+Command
+``` java
+interface Order {
+    void execute();
+}
+```
 
+ConcreteCommand
+``` java
+class BuyStock implements Order {
+    private Stock myStock;
+
+    public BuyStock(Stock someStock) {
+        myStock = someStock;
+    }
+
+    public void execute() {
+        myStock.buy();
+    }
+}
+
+class SellStock implements Order {
+    private Stock myStock;
+
+    public SellStock(Stock someStock){
+        this.myStock = someStock;
+    }
+
+    public void execute() {
+        myStock.sell();
+    }
+}
+```
+
+Receiver
+``` java
+public class Stock {
+    private String name;
+    private int quantity;
+
+    public Stock(String name, int quantity) {
+        this.name = name;
+        this.quantity = quantity;
+    }
+
+    public void buy() {
+        System.out.println("Stock [ Name: "+name+ " , Quantity: " + quantity +" ] bought");
+    }
+
+    public void sell(){
+        System.out.println("Stock [ Name: "+name+" , Quantity: " + quantity +" ] sold");
+    }
+}
+```
+
+Invoker
+``` java
+class Broker {
+    private List<Order> orderList = new ArrayList<Order>();
+
+    public void takeOrder(Order order) {
+        orderList.add(order);
+    }
+
+    public void placeOrders(){
+        for (Order order : orderList) {
+            order.execute();
+        }
+        orderList.clear();
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+    public static void main(String[] args) {
+        Stock AAA = new Stock("AAA", 100);
+        Stock BBB = new Stock("BBB", 200);
+        Stock CCC = new Stock("CCC", 300);
+
+        BuyStock buyStockAAA1 = new BuyStock(AAA);
+        BuyStock buyStockAAA2 = new BuyStock(AAA);
+        BuyStock buyStockBBB1 = new BuyStock(BBB);
+        BuyStock buyStockCCC1 = new BuyStock(CCC);
+        SellStock sellStockAAA1 = new SellStock(AAA);
+        SellStock sellStockBBB1 = new SellStock(BBB);
+
+        Broker broker = new Broker();
+        broker.takeOrder(buyStockAAA1);
+        broker.takeOrder(buyStockAAA2);
+        broker.takeOrder(buyStockBBB1);
+        broker.takeOrder(buyStockCCC1);
+
+        broker.takeOrder(sellStockAAA1);
+        broker.takeOrder(sellStockBBB1);
+
+        broker.placeOrders();
+    }
+}
+```
+``` text
+Stock [ Name: AAA , Quantity: 100 ] bought
+Stock [ Name: AAA , Quantity: 100 ] bought
+Stock [ Name: BBB , Quantity: 200 ] bought
+Stock [ Name: CCC , Quantity: 300 ] bought
+Stock [ Name: AAA , Quantity: 100 ] sold
+Stock [ Name: BBB , Quantity: 200 ] sold
+```
 ___
 
 ## **4.03 Interpreter Design Pattern**
+
+AbstractExpression
+``` java
+public interface Expression {
+    boolean interpret(Context context);
+}
+```
+TerminalExpression
+``` java
+class TerminalExpression implements Expression {
+    private String data;
+
+    public TerminalExpression(String data) {
+        this.data = data;
+    }
+
+    @Override
+    public boolean interpret(Context context) {
+        return context.getResult(data);
+    }
+}
+```
+NonterminalExpressions
+``` java
+public class AndExpression implements Expression {
+    private Expression expr1 = null;
+    private Expression expr2 = null;
+
+    public AndExpression(Expression expr1, Expression expr2) {
+        this.expr1 = expr1;
+        this.expr2 = expr2;
+    }
+
+    @Override
+    public boolean interpret(Context context) {
+        return expr1.interpret(context) && expr2.interpret(context);
+    }
+}
+
+class OrExpression implements Expression {
+    private Expression expr1 = null;
+    private Expression expr2 = null;
+
+    public OrExpression(Expression expr1, Expression expr2) {
+        this.expr1 = expr1;
+        this.expr2 = expr2;
+    }
+
+    @Override
+    public boolean interpret(Context context) {
+        return expr1.interpret(context) || expr2.interpret(context);
+    }
+}
+```
+
+Context
+``` java
+class Context {
+    String input;
+
+    public Context(String input) {
+        this.input = input;
+    }
+
+    public boolean getResult(String data) {
+        if(input.contains(data))
+            return true;
+        else
+            return false;
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+
+    public static Expression getMaleExpression() {
+        Expression robert = new TerminalExpression("Robert");
+        Expression john = new TerminalExpression("John");
+        return new OrExpression(robert, john);
+    }
+
+    public static Expression getMarriedWomanExpression(){
+        Expression julie = new TerminalExpression("Julie");
+        Expression married = new TerminalExpression("Married");
+        return new AndExpression(julie, married);
+    }
+
+    public static void main (String[] args) {
+        Expression isMale = getMaleExpression();
+        Expression isMarriedWoman = getMarriedWomanExpression();
+
+        Context ic = new Context("John");
+        System.out.println("John is male? " + isMale.interpret(ic));
+
+        Context ic2 = new Context("Married Julie");
+        System.out.println("Julie is a married women? " + isMarriedWoman.interpret(ic2));
+
+        Context ic3 = new Context("Lucy");
+        System.out.println("Lucy is male? " + isMale.interpret(ic3));
+    }
+}
+```
+``` text
+John is male? true
+Julie is a married women? true
+Lucy is male? false
+```
+___
+
+## **4.04 Iterator Design Pattern**
+
+Used it when you want to provide standard way to iterate over a collection and hide the implementation logic from client program
+
+
+``` java
+public interface SubjectInterface {
+    public IteratorInterface createIterator();
+}
+
+class Arts implements SubjectInterface {
+    private String[] subjects;
+
+    public Arts() {
+        subjects = new String[2];
+        subjects[0] = "Bengali";
+        subjects[1] = "English" ;
+    }
+
+    public IteratorInterface createIterator() {
+        return new ArtsIterator(subjects);
+    }
+}
+
+class Science implements SubjectInterface {
+    private LinkedList<String> subjects;
+
+    public Science()  {
+        subjects = new LinkedList<String>();
+        subjects.addLast("Maths");
+        subjects.addLast("Comp. Sc.");
+        subjects.addLast("Physics");
+    }
+
+    @Override
+    public IteratorInterface createIterator()  {
+        return new ScienceIterator(subjects);
+    }
+}
+```
+
+``` java
+interface IteratorInterface {
+    void first();//Reset to first element
+    String next();//get next element
+    boolean isDone();//End of collection check
+    String currentItem();//Retrieve Current Item
+}
+
+class ArtsIterator implements IteratorInterface {
+    private String[] subjects;
+    private int position;
+
+    public ArtsIterator(String[] subjects)  {
+        this.subjects = subjects;
+        position = 0;
+    }
+
+    public void first()  {
+        position = 0;
+    }
+
+    public String next()  {
+        return subjects[position++];
+    }
+
+    public boolean isDone() {
+        return position >= subjects.length;
+    }
+
+    public String currentItem()  {
+        return subjects[position];
+    }
+}
+
+class ScienceIterator implements IteratorInterface {
+    private LinkedList<String> subjects;
+    private int position;
+
+    public ScienceIterator(LinkedList<String> subjects)  {
+        this.subjects = subjects;
+        position = 0;
+    }
+
+    public void first()  {
+        position = 0;
+    }
+
+    public String next()  {
+        return subjects.get(position++);
+    }
+
+    public boolean isDone() {
+        return position >= subjects.size();
+    }
+
+    public String currentItem()  {
+        return subjects.get(position);
+    }
+}
+```
+
+Client
+``` java
+public class Client {
+
+    public static void print(IteratorInterface iterator)  {
+        while (!iterator.isDone())  {
+            System.out.println(iterator.next());
+        }
+    }
+    
+    public static void main(String[] args)
+    {
+        System.out.println("***Iterator Pattern Demo***\n");
+        SubjectInterface Sc_subject = new Science();
+        SubjectInterface Ar_subjects = new Arts();
+
+        IteratorInterface Sc_iterator = Sc_subject.createIterator();
+        IteratorInterface Ar_iterator = Ar_subjects.createIterator();
+
+        System.out.println("\nScience subjects :");
+        print(Sc_iterator);
+
+        System.out.println("\nArts subjects :");
+        print(Ar_iterator);
+    }
+}
+```
+___
+
+## **4.05 Mediator Design Pattern**
+
+``` java
+
+interface ChatMediator {
+    void sendMessage(String msg, User user);
+    void addUser(User user);
+}
+
+class ChatMediatorImpl implements ChatMediator {
+    private List<User> users;
+
+    public ChatMediatorImpl() {
+        this.users = new ArrayList<>();
+    }
+
+    @Override
+    public void addUser(User user) {
+        this.users.add(user);
+    }
+
+    @Override
+    public void sendMessage(String msg, User user) {
+        for (User u: this.users) {
+            // message should not be received by the user sending it
+            if(u != user) {
+                u.receive(msg);
+            }
+        }
+    }
+}
+```
+
+``` java
+abstract class User {
+    protected ChatMediator mediator;
+    protected String name;
+
+    public User(ChatMediator med, String name) {
+        this.mediator = med;
+        this.name = name;
+    }
+
+    public abstract void send(String msg);
+
+    public abstract void receive(String msg);
+}
+
+class UserImpl extends User {
+    public UserImpl(ChatMediator med, String name) {
+        super(med, name);
+    }
+
+    @Override
+    public void send(String msg) {
+        System.out.println(this.name + ": Sending Message=" + msg);
+        mediator.sendMessage(msg, this);
+    }
+
+    @Override
+    public void receive(String msg) {
+        System.out.println(this.name + ": Received Message:" + msg);
+    }
+}
+```
+
+``` java
+public class Client {
+    public static void main(String[] args) {
+
+        ChatMediator mediator = new ChatMediatorImpl();
+
+        User user1 = new UserImpl(mediator, "Jason");
+        User user2 = new UserImpl(mediator, "Jennifer");
+        User user3 = new UserImpl(mediator, "Lucy");
+        User user4 = new UserImpl(mediator, "Ian");
+
+        mediator.addUser(user1);
+        mediator.addUser(user2);
+        mediator.addUser(user3);
+        mediator.addUser(user4);
+
+        user1.send("Hi All");
+
+    }
+}
+```
+___
+
+## **4.06 Memento Design Pattern**
+
+___
+
+## **4.07 Observer Design Pattern**
+
+___
+
+## **4.08 State Design Pattern**
 
 ___
 

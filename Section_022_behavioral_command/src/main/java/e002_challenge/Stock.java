@@ -1,8 +1,13 @@
 package e002_challenge;
 
 public class Stock {
-    private String name = "Google";
-    private int quantity = 1000;
+    private String name;
+    private int quantity;
+
+    public Stock(String name, int quantity) {
+        this.name = name;
+        this.quantity = quantity;
+    }
 
     public void buy() {
         System.out.println("Stock [ Name: "+name+ " , Quantity: " + quantity +" ] bought");
